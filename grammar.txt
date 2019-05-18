@@ -1,0 +1,72 @@
+start : branch
+      | empty
+
+branch : branch choice
+       | choice
+
+choice : var_assign
+       | expression
+       | print_stmt
+       | scan_stmt
+       | while_stmt
+       | for_stmt
+       | if_stmt
+
+var_assign : ID EQUALS expression
+           | ID EQUALS scan_stmt
+           | ID EQUALS array
+           | ELEMENT EQUALS expression
+           | ELEMENT EQUALS scan_stmt 
+           | ELEMENT EQUALS array
+
+array : [ ] 
+      | [ item ]
+
+item : term 
+     | term , item
+
+term : array
+     | INT
+     | FLOAT
+     | ID
+     | STRING
+     | ELEMENT
+     | expression
+
+expression : arith_exp
+           | logic_exp
+           | relation_exp
+           | term
+
+arith_exp : expression MULTIPLY expression
+          | expression DIVIDE expression
+          | expression MODULO expression
+          | expression FLOOR expression 
+          | expression PLUS expression
+          | expression MINUS expression
+
+logic_exp : expression AND expression
+          | expression OR expression
+
+logic_exp : NOT expression
+
+relation_exp : expression LT expression
+             | expression LTE expression
+             | expression GT expression
+             | expression GTE expression
+             | expression EQ expression
+             | expression NEQ expression
+
+print_stmt : PRINT arith_exp
+           | PRINT logic_exp
+           | PRINT relation_exp
+           | PRINT term
+
+scan_stmt : INPUT ( term )
+
+while_stmt : WHILE expression THEN { branch }
+
+for_stmt : FOR ( term ) in RANGE (  ) THEN { branch }
+
+if_stmt : IF expression THEN { branch }
+        | IF expression THEN { branch } ELSE { branch }
