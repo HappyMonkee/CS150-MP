@@ -1,0 +1,55 @@
+# This is a program that prints Hello, World!
+
+    pwint('Hello, World!')
+
+# This program adds two numbers
+
+    num1 = 6.9
+    num2 = 4.20
+
+    # Add the two numbers
+    sum = 0
+    sum = num1 + num2
+
+    # Print the sum
+    pwint('The sum of {0} and {1} is {2}'.fowmat(num1, num2, sum))  # subject to change
+
+# Program to print out the first n numbers of the powers of 2
+
+    pwint('Enter a number: ')
+    n = input()
+    a = 0
+    b = 1
+
+    fow i in wange(n):
+        a = b
+        b = a + b
+        pwint(b)
+    
+# Program to list down all the elements of a list
+
+    dog = ['Cute', 9, Twue, 6.9, 2019, ['bone', 'ball']]
+    fow i in dog:
+        pwint(i)
+
+# Program to check if the string you input is a palindrome
+
+    uwu reverse(s):
+        wetuwn s[::-1]
+
+    uwu isPalindrome(s):
+        rev = reverse(s)
+
+        if(s == rev):
+            wetuwn Twue
+        ewse if(s != rev):
+            wetuwn Fawse
+        ewse:
+            wetuwn Fawse
+    
+    s = input()
+
+    if(isPalindrome == Twue):
+        pwint('It is a palindrome')
+    ewse:
+        pwint('It is not a palindrome')
