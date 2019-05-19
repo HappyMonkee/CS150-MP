@@ -13,6 +13,7 @@ tokens = [
     'MULTIPLY',
     'MODULO',       #added modulo support
     'EQUALS',
+    'BOOL',         #added boolean phrase
 ]
 
 
@@ -38,6 +39,10 @@ def t_INT(t):
     t.value = int(t.value)
     return t
 
+def t_BOOL(t):
+    r'true|false'
+    t.type = "BOOL"
+    return t
 
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-z_0-9]*'
@@ -97,6 +102,11 @@ def p_expression_int_float(p):
     '''
     p[0] = p[1]
 
+def p_expression_bool(p):
+    '''
+    expression  :   BOOL
+    '''
+    p[0] = ('bool', p[1])
 
 def p_expression_var(p):
     '''
@@ -122,6 +132,11 @@ def run(p):
     global env
 
     if type(p) == tuple:
+
+        ### boolean?? not sure where to add yet ###
+        if p[0] == 'bool':
+            print("testing bool stuff")
+            return
 
         ### Check if Variables Exists ###
         if p[0] == 'var':
@@ -163,6 +178,8 @@ def run(p):
 while True:
     try:
         s = input(">>> ")
+        if(s == "UMU"):              # added exit code via cmd
+            break
     except EOFError:
         print()
         break

@@ -11,20 +11,24 @@ Rule 5     expression -> expression MULTIPLY expression
 Rule 6     expression -> expression DIVIDE expression
 Rule 7     expression -> expression PLUS expression
 Rule 8     expression -> expression MINUS expression
-Rule 9     expression -> INT
-Rule 10    expression -> FLOAT
-Rule 11    expression -> NAME
-Rule 12    empty -> <empty>
+Rule 9     expression -> expression MODULO expression
+Rule 10    expression -> INT
+Rule 11    expression -> FLOAT
+Rule 12    expression -> BOOL
+Rule 13    expression -> NAME
+Rule 14    empty -> <empty>
 
 Terminals, with rules where they appear
 
+BOOL                 : 12
 DIVIDE               : 6
 EQUALS               : 4
-FLOAT                : 10
-INT                  : 9
+FLOAT                : 11
+INT                  : 10
 MINUS                : 8
+MODULO               : 9
 MULTIPLY             : 5
-NAME                 : 4 11
+NAME                 : 4 13
 PLUS                 : 7
 error                : 
 
@@ -32,7 +36,7 @@ Nonterminals, with rules where they appear
 
 calc                 : 0
 empty                : 3
-expression           : 1 4 5 5 6 6 7 7 8 8
+expression           : 1 4 5 5 6 6 7 7 8 8 9 9
 var_assign           : 2
 
 Parsing method: LALR
@@ -47,16 +51,19 @@ state 0
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
     (4) var_assign -> . NAME EQUALS expression
-    (12) empty -> .
+    (14) empty -> .
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 7
-    $end            reduce using rule 12 (empty -> .)
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 8
+    $end            reduce using rule 14 (empty -> .)
 
     calc                           shift and go to state 1
     expression                     shift and go to state 2
@@ -76,12 +83,14 @@ state 2
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     $end            reduce using rule 1 (calc -> expression .)
-    MULTIPLY        shift and go to state 8
-    DIVIDE          shift and go to state 9
-    PLUS            shift and go to state 10
-    MINUS           shift and go to state 11
+    MULTIPLY        shift and go to state 9
+    DIVIDE          shift and go to state 10
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 12
+    MODULO          shift and go to state 13
 
 
 state 3
@@ -100,226 +109,327 @@ state 4
 
 state 5
 
-    (9) expression -> INT .
+    (10) expression -> INT .
 
-    MULTIPLY        reduce using rule 9 (expression -> INT .)
-    DIVIDE          reduce using rule 9 (expression -> INT .)
-    PLUS            reduce using rule 9 (expression -> INT .)
-    MINUS           reduce using rule 9 (expression -> INT .)
-    $end            reduce using rule 9 (expression -> INT .)
+    MULTIPLY        reduce using rule 10 (expression -> INT .)
+    DIVIDE          reduce using rule 10 (expression -> INT .)
+    PLUS            reduce using rule 10 (expression -> INT .)
+    MINUS           reduce using rule 10 (expression -> INT .)
+    MODULO          reduce using rule 10 (expression -> INT .)
+    $end            reduce using rule 10 (expression -> INT .)
 
 
 state 6
 
-    (10) expression -> FLOAT .
+    (11) expression -> FLOAT .
 
-    MULTIPLY        reduce using rule 10 (expression -> FLOAT .)
-    DIVIDE          reduce using rule 10 (expression -> FLOAT .)
-    PLUS            reduce using rule 10 (expression -> FLOAT .)
-    MINUS           reduce using rule 10 (expression -> FLOAT .)
-    $end            reduce using rule 10 (expression -> FLOAT .)
+    MULTIPLY        reduce using rule 11 (expression -> FLOAT .)
+    DIVIDE          reduce using rule 11 (expression -> FLOAT .)
+    PLUS            reduce using rule 11 (expression -> FLOAT .)
+    MINUS           reduce using rule 11 (expression -> FLOAT .)
+    MODULO          reduce using rule 11 (expression -> FLOAT .)
+    $end            reduce using rule 11 (expression -> FLOAT .)
 
 
 state 7
 
-    (11) expression -> NAME .
-    (4) var_assign -> NAME . EQUALS expression
+    (12) expression -> BOOL .
 
-    MULTIPLY        reduce using rule 11 (expression -> NAME .)
-    DIVIDE          reduce using rule 11 (expression -> NAME .)
-    PLUS            reduce using rule 11 (expression -> NAME .)
-    MINUS           reduce using rule 11 (expression -> NAME .)
-    $end            reduce using rule 11 (expression -> NAME .)
-    EQUALS          shift and go to state 12
+    MULTIPLY        reduce using rule 12 (expression -> BOOL .)
+    DIVIDE          reduce using rule 12 (expression -> BOOL .)
+    PLUS            reduce using rule 12 (expression -> BOOL .)
+    MINUS           reduce using rule 12 (expression -> BOOL .)
+    MODULO          reduce using rule 12 (expression -> BOOL .)
+    $end            reduce using rule 12 (expression -> BOOL .)
 
 
 state 8
+
+    (13) expression -> NAME .
+    (4) var_assign -> NAME . EQUALS expression
+
+    MULTIPLY        reduce using rule 13 (expression -> NAME .)
+    DIVIDE          reduce using rule 13 (expression -> NAME .)
+    PLUS            reduce using rule 13 (expression -> NAME .)
+    MINUS           reduce using rule 13 (expression -> NAME .)
+    MODULO          reduce using rule 13 (expression -> NAME .)
+    $end            reduce using rule 13 (expression -> NAME .)
+    EQUALS          shift and go to state 14
+
+
+state 9
 
     (5) expression -> expression MULTIPLY . expression
     (5) expression -> . expression MULTIPLY expression
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 14
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
 
-    expression                     shift and go to state 13
+    expression                     shift and go to state 15
 
-state 9
+state 10
 
     (6) expression -> expression DIVIDE . expression
     (5) expression -> . expression MULTIPLY expression
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 14
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
 
-    expression                     shift and go to state 15
+    expression                     shift and go to state 17
 
-state 10
+state 11
 
     (7) expression -> expression PLUS . expression
     (5) expression -> . expression MULTIPLY expression
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 14
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
 
-    expression                     shift and go to state 16
+    expression                     shift and go to state 18
 
-state 11
+state 12
 
     (8) expression -> expression MINUS . expression
     (5) expression -> . expression MULTIPLY expression
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 14
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
 
-    expression                     shift and go to state 17
+    expression                     shift and go to state 19
 
-state 12
+state 13
+
+    (9) expression -> expression MODULO . expression
+    (5) expression -> . expression MULTIPLY expression
+    (6) expression -> . expression DIVIDE expression
+    (7) expression -> . expression PLUS expression
+    (8) expression -> . expression MINUS expression
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
+
+    INT             shift and go to state 5
+    FLOAT           shift and go to state 6
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
+
+    expression                     shift and go to state 20
+
+state 14
 
     (4) var_assign -> NAME EQUALS . expression
     (5) expression -> . expression MULTIPLY expression
     (6) expression -> . expression DIVIDE expression
     (7) expression -> . expression PLUS expression
     (8) expression -> . expression MINUS expression
-    (9) expression -> . INT
-    (10) expression -> . FLOAT
-    (11) expression -> . NAME
+    (9) expression -> . expression MODULO expression
+    (10) expression -> . INT
+    (11) expression -> . FLOAT
+    (12) expression -> . BOOL
+    (13) expression -> . NAME
 
     INT             shift and go to state 5
     FLOAT           shift and go to state 6
-    NAME            shift and go to state 14
+    BOOL            shift and go to state 7
+    NAME            shift and go to state 16
 
-    expression                     shift and go to state 18
+    expression                     shift and go to state 21
 
-state 13
+state 15
 
     (5) expression -> expression MULTIPLY expression .
     (5) expression -> expression . MULTIPLY expression
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     MULTIPLY        reduce using rule 5 (expression -> expression MULTIPLY expression .)
     DIVIDE          reduce using rule 5 (expression -> expression MULTIPLY expression .)
     PLUS            reduce using rule 5 (expression -> expression MULTIPLY expression .)
     MINUS           reduce using rule 5 (expression -> expression MULTIPLY expression .)
+    MODULO          reduce using rule 5 (expression -> expression MULTIPLY expression .)
     $end            reduce using rule 5 (expression -> expression MULTIPLY expression .)
 
-  ! MULTIPLY        [ shift and go to state 8 ]
-  ! DIVIDE          [ shift and go to state 9 ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 11 ]
+  ! MULTIPLY        [ shift and go to state 9 ]
+  ! DIVIDE          [ shift and go to state 10 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 12 ]
+  ! MODULO          [ shift and go to state 13 ]
 
 
-state 14
+state 16
 
-    (11) expression -> NAME .
+    (13) expression -> NAME .
 
-    MULTIPLY        reduce using rule 11 (expression -> NAME .)
-    DIVIDE          reduce using rule 11 (expression -> NAME .)
-    PLUS            reduce using rule 11 (expression -> NAME .)
-    MINUS           reduce using rule 11 (expression -> NAME .)
-    $end            reduce using rule 11 (expression -> NAME .)
+    MULTIPLY        reduce using rule 13 (expression -> NAME .)
+    DIVIDE          reduce using rule 13 (expression -> NAME .)
+    PLUS            reduce using rule 13 (expression -> NAME .)
+    MINUS           reduce using rule 13 (expression -> NAME .)
+    MODULO          reduce using rule 13 (expression -> NAME .)
+    $end            reduce using rule 13 (expression -> NAME .)
 
 
-state 15
+state 17
 
     (6) expression -> expression DIVIDE expression .
     (5) expression -> expression . MULTIPLY expression
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     MULTIPLY        reduce using rule 6 (expression -> expression DIVIDE expression .)
     DIVIDE          reduce using rule 6 (expression -> expression DIVIDE expression .)
     PLUS            reduce using rule 6 (expression -> expression DIVIDE expression .)
     MINUS           reduce using rule 6 (expression -> expression DIVIDE expression .)
+    MODULO          reduce using rule 6 (expression -> expression DIVIDE expression .)
     $end            reduce using rule 6 (expression -> expression DIVIDE expression .)
 
-  ! MULTIPLY        [ shift and go to state 8 ]
-  ! DIVIDE          [ shift and go to state 9 ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 11 ]
+  ! MULTIPLY        [ shift and go to state 9 ]
+  ! DIVIDE          [ shift and go to state 10 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 12 ]
+  ! MODULO          [ shift and go to state 13 ]
 
 
-state 16
+state 18
 
     (7) expression -> expression PLUS expression .
     (5) expression -> expression . MULTIPLY expression
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     PLUS            reduce using rule 7 (expression -> expression PLUS expression .)
     MINUS           reduce using rule 7 (expression -> expression PLUS expression .)
+    MODULO          reduce using rule 7 (expression -> expression PLUS expression .)
     $end            reduce using rule 7 (expression -> expression PLUS expression .)
-    MULTIPLY        shift and go to state 8
-    DIVIDE          shift and go to state 9
+    MULTIPLY        shift and go to state 9
+    DIVIDE          shift and go to state 10
 
   ! MULTIPLY        [ reduce using rule 7 (expression -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 7 (expression -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 11 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 12 ]
+  ! MODULO          [ shift and go to state 13 ]
 
 
-state 17
+state 19
 
     (8) expression -> expression MINUS expression .
     (5) expression -> expression . MULTIPLY expression
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     PLUS            reduce using rule 8 (expression -> expression MINUS expression .)
     MINUS           reduce using rule 8 (expression -> expression MINUS expression .)
+    MODULO          reduce using rule 8 (expression -> expression MINUS expression .)
     $end            reduce using rule 8 (expression -> expression MINUS expression .)
-    MULTIPLY        shift and go to state 8
-    DIVIDE          shift and go to state 9
+    MULTIPLY        shift and go to state 9
+    DIVIDE          shift and go to state 10
 
   ! MULTIPLY        [ reduce using rule 8 (expression -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 8 (expression -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 10 ]
-  ! MINUS           [ shift and go to state 11 ]
+  ! PLUS            [ shift and go to state 11 ]
+  ! MINUS           [ shift and go to state 12 ]
+  ! MODULO          [ shift and go to state 13 ]
 
 
-state 18
+state 20
+
+    (9) expression -> expression MODULO expression .
+    (5) expression -> expression . MULTIPLY expression
+    (6) expression -> expression . DIVIDE expression
+    (7) expression -> expression . PLUS expression
+    (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
+
+  ! shift/reduce conflict for MULTIPLY resolved as shift
+  ! shift/reduce conflict for DIVIDE resolved as shift
+  ! shift/reduce conflict for PLUS resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+  ! shift/reduce conflict for MODULO resolved as shift
+    $end            reduce using rule 9 (expression -> expression MODULO expression .)
+    MULTIPLY        shift and go to state 9
+    DIVIDE          shift and go to state 10
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 12
+    MODULO          shift and go to state 13
+
+  ! MULTIPLY        [ reduce using rule 9 (expression -> expression MODULO expression .) ]
+  ! DIVIDE          [ reduce using rule 9 (expression -> expression MODULO expression .) ]
+  ! PLUS            [ reduce using rule 9 (expression -> expression MODULO expression .) ]
+  ! MINUS           [ reduce using rule 9 (expression -> expression MODULO expression .) ]
+  ! MODULO          [ reduce using rule 9 (expression -> expression MODULO expression .) ]
+
+
+state 21
 
     (4) var_assign -> NAME EQUALS expression .
     (5) expression -> expression . MULTIPLY expression
     (6) expression -> expression . DIVIDE expression
     (7) expression -> expression . PLUS expression
     (8) expression -> expression . MINUS expression
+    (9) expression -> expression . MODULO expression
 
     $end            reduce using rule 4 (var_assign -> NAME EQUALS expression .)
-    MULTIPLY        shift and go to state 8
-    DIVIDE          shift and go to state 9
-    PLUS            shift and go to state 10
-    MINUS           shift and go to state 11
+    MULTIPLY        shift and go to state 9
+    DIVIDE          shift and go to state 10
+    PLUS            shift and go to state 11
+    MINUS           shift and go to state 12
+    MODULO          shift and go to state 13
 
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for MULTIPLY in state 20 resolved as shift
+WARNING: shift/reduce conflict for DIVIDE in state 20 resolved as shift
+WARNING: shift/reduce conflict for PLUS in state 20 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 20 resolved as shift
+WARNING: shift/reduce conflict for MODULO in state 20 resolved as shift
