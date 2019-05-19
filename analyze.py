@@ -11,6 +11,7 @@ tokens = [
     'MINUS',
     'DIVIDE',
     'MULTIPLY',
+    'MODULO',       #added modulo support
     'EQUALS',
 ]
 
@@ -19,6 +20,7 @@ t_PLUS = r'\+'
 t_MINUS = r'\-'
 t_MULTIPLY = r'\*'
 t_DIVIDE = r'\/'
+t_MODULO = r'\%'
 t_EQUALS = r'\='
 t_ignore = r' '
 
@@ -69,7 +71,6 @@ def p_calc(p):
         print(res)
     # print(run(p[1]))
 
-
 def p_var_assign(p):
     '''
 
@@ -84,6 +85,7 @@ def p_expression(p):
                 |   expression DIVIDE expression
                 |   expression PLUS expression
                 |   expression MINUS expression
+                |   expression MODULO expression
     '''
 
     p[0] = (p[2], p[1], p[3])
@@ -121,8 +123,6 @@ def run(p):
 
     if type(p) == tuple:
 
-
-
         ### Check if Variables Exists ###
         if p[0] == 'var':
             if p[1] not in env:
@@ -152,6 +152,8 @@ def run(p):
             return a * b
         if p[0] == '/':
             return a / b
+        if p[0] == '%':
+            return a % b
     else:
         return p
 
