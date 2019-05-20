@@ -1,20 +1,44 @@
 import ply.lex as lex
 import ply.yacc as yacc
-import sys
+from sys import *
 
 tokens = [
 
-    'INT',
-    'FLOAT',
-    'NAME',
-    'PLUS',
-    'MINUS',
-    'DIVIDE',
-    'MULTIPLY',
-    'MODULO',       #added modulo support
-    'EQUALS',
-    'BOOL',         #added boolean phrase
+    'INT','FLOAT','STRING','NAME',
+    'PLUS','MINUS','DIVIDE','MULTIPLY','MODULO','EQUALS','BOOL',
+    'LD', 'LDEQ', 'GD', 'GDEQ', 'NOTEQ', 'EQUAL', 'EQUALEQUAL',
+    'AND', 'OR', 'NOT',
+    'LPAREN', 'RPAREN',
+    'IF', 'ELSE', 'WHILE',
+    'PRINT', 'READ'      
 ]
+
+reserved = {
+    # 'PLUS'      : 'PLUS',
+    # 'MINUS'     : 'MINUS',
+    # 'DIVIDE'    : 'DIVIDE',
+    # 'MULTIPLY'  : 'MULTIPLY',
+    # 'MODULO'    : 'MODULO',
+
+    'LD'        : 'LD',
+    'LDEQ'      : 'LDEQ',
+    'GD'        : 'GD',
+    'GDEQ'      : 'GDEQ',
+    'NOTEQ'     : 'NOTEQ',
+    'EQUAL'     : 'EQUAL',
+    'EQUALEQUAL': 'EQUALEQUAL',
+
+    'AND'       : 'AND',
+    'OR'        : 'OR',
+    'NOT'       : 'NOT',
+
+    'IF'        : 'IF',
+    'ELSE'      : 'ELSE',
+    'WHILE'     : 'WHILE',
+
+    'PRINT'     : 'PRINT',
+    'READ'      : 'READ'
+}
 
 
 t_PLUS = r'\+'
@@ -25,9 +49,13 @@ t_MODULO = r'\%'
 t_EQUALS = r'\='
 t_ignore = r' '
 
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
+
 def t_COMMENT(t):
     r'\#.*'
-    pass
+    pass        #no return value, token discarded
 
 def t_FLOAT(t):
     r'\d+\.\d+'
@@ -44,6 +72,11 @@ def t_BOOL(t):
     t.type = "BOOL"
     return t
 
+def t_STRING(t):
+    r'\"([^\\"]|(\\.))*\"'
+    t.value = t.value[1:-1]
+    return t
+
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-z_0-9]*'
     t.type = 'NAME'
@@ -57,11 +90,47 @@ lexer = lex.lex()
 
 precedence = (
 
+    ('left', 'AND', 'OR'),
+    ('nonassoc', 'EQUALEQUAL', 'NOTEQ'),
+    ('nonassoc', 'LD', 'LDEQ', 'GD', 'GDEQ'),
     ('left', 'PLUS', 'MINUS'),
-    ('left', 'MULTIPLY', 'DIVIDE')
+    ('left', 'MULTIPLY', 'DIVIDE', 'MODULO')
 
 )
 
+def p_start(p):         #start of grammar
+    '''
+    start   : branch
+            | empty
+    '''
+    p[0] = p[1]
+    #run(p[0])           #comment out first
+
+def p_branch(p):        #grammar for multiple lines
+    '''
+    branch  : branch choice
+            | choice
+
+    '''
+    if len(p) == 3:
+        p[0] = ('MULTILINES', p[1], p[2])
+    else:
+        p[0] = p[1]
+
+def p_choice(p):        #grammar for each line of code
+    '''
+    choice : var_assign
+           | expression
+           | print_stmt
+           | scan_stmt
+           | while_stmt
+           | for_stmt
+           | if_stmt
+    '''
+    p[0] = p[1]
+
+
+#-------------------------------------------------#
 
 def p_calc(p):
     '''
