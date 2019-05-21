@@ -113,9 +113,8 @@ def p_start(p):
     '''
     print("START")
     p[0] = p[1]
-    res = run(p[0])
-    if res != None:
-        print(res)
+    if p[0] != None:
+        print(p[0])
 
 
 #grammar for multiple lines

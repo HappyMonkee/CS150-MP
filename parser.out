@@ -39,25 +39,28 @@ Rule 33    expression -> STRING
 Rule 34    expression -> TRUE
 Rule 35    expression -> FALSE
 Rule 36    expression -> LPAREN expression RPAREN
-Rule 37    conditional -> conditional_if
-Rule 38    conditional -> conditional_if_else
-Rule 39    conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP
-Rule 40    conditional_if -> IF expression THEN language STOP
-Rule 41    iterative -> WHILE expression THEN language STOP
-Rule 42    empty -> <empty>
+Rule 37    conditional -> IF expression THEN language else_if_blocks else_block STOP
+Rule 38    else_if_blocks -> empty
+Rule 39    else_if_blocks -> else_if_blocks else_if_block
+Rule 40    else_if_block -> ELSE_IF expression THEN language
+Rule 41    else_block -> ELSE language
+Rule 42    else_block -> empty
+Rule 43    iterative -> WHILE expression THEN language STOP
+Rule 44    empty -> <empty>
 
 Terminals, with rules where they appear
 
 AND                  : 28
 DIVIDE               : 18
-ELSE                 : 39
+ELSE                 : 41
+ELSE_IF              : 40
 EQUALEQUAL           : 26
 EQUALS               : 15
 FALSE                : 35
 FLOAT                : 32
 GD                   : 24
 GDEQ                 : 25
-IF                   : 39 40
+IF                   : 37
 INT                  : 31
 LD                   : 22
 LDEQ                 : 23
@@ -73,24 +76,25 @@ PLUS                 : 20
 PRINT                : 13
 READ                 : 11
 RPAREN               : 11 13 36
-STOP                 : 39 39 40 41
+STOP                 : 37 43
 STRING               : 33
-THEN                 : 39 39 40 41
+THEN                 : 37 40 43
 TRUE                 : 34
-WHILE                : 41
+WHILE                : 43
 error                : 
 
 Nonterminals, with rules where they appear
 
 conditional          : 8
-conditional_if       : 37
-conditional_if_else  : 38
-empty                : 2
-expression           : 5 13 15 17 17 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29 30 36 39 40 41
+else_block           : 37
+else_if_block        : 39
+else_if_blocks       : 37 39
+empty                : 2 38 42
+expression           : 5 13 15 17 17 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29 30 36 37 40 43
 expression_operation : 16
 input                : 10
 iterative            : 7
-language             : 1 3 39 39 40 41
+language             : 1 3 37 40 41 43
 line                 : 3 4
 output               : 9
 output_print         : 12
@@ -106,7 +110,7 @@ state 0
     (2) start -> . empty
     (3) language -> . language line
     (4) language -> . line
-    (42) empty -> .
+    (44) empty -> .
     (5) line -> . expression
     (6) line -> . var_assign
     (7) line -> . iterative
@@ -122,9 +126,8 @@ state 0
     (35) expression -> . FALSE
     (36) expression -> . LPAREN expression RPAREN
     (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
     (12) output -> . output_print
     (11) input -> . READ LPAREN NAME RPAREN
     (17) expression_operation -> . expression MULTIPLY expression
@@ -141,11 +144,9 @@ state 0
     (28) expression_operation -> . expression AND expression
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
     (13) output_print -> . PRINT LPAREN expression RPAREN
 
-    $end            reduce using rule 42 (empty -> .)
+    $end            reduce using rule 44 (empty -> .)
     NAME            shift and go to state 11
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
@@ -154,10 +155,10 @@ state 0
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
     WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
 
     start                          shift and go to state 1
     language                       shift and go to state 2
@@ -170,9 +171,7 @@ state 0
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
+    output_print                   shift and go to state 21
 
 state 1
 
@@ -199,9 +198,8 @@ state 2
     (35) expression -> . FALSE
     (36) expression -> . LPAREN expression RPAREN
     (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
     (12) output -> . output_print
     (11) input -> . READ LPAREN NAME RPAREN
     (17) expression_operation -> . expression MULTIPLY expression
@@ -218,8 +216,6 @@ state 2
     (28) expression_operation -> . expression AND expression
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
     (13) output_print -> . PRINT LPAREN expression RPAREN
 
     $end            reduce using rule 1 (start -> language .)
@@ -231,12 +227,12 @@ state 2
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
     WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
 
-    line                           shift and go to state 27
+    line                           shift and go to state 25
     expression                     shift and go to state 5
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
@@ -244,9 +240,7 @@ state 2
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
+    output_print                   shift and go to state 21
 
 state 3
 
@@ -267,12 +261,14 @@ state 4
     FALSE           reduce using rule 4 (language -> line .)
     LPAREN          reduce using rule 4 (language -> line .)
     WHILE           reduce using rule 4 (language -> line .)
+    IF              reduce using rule 4 (language -> line .)
     READ            reduce using rule 4 (language -> line .)
     NOT             reduce using rule 4 (language -> line .)
-    IF              reduce using rule 4 (language -> line .)
     PRINT           reduce using rule 4 (language -> line .)
     $end            reduce using rule 4 (language -> line .)
     STOP            reduce using rule 4 (language -> line .)
+    ELSE            reduce using rule 4 (language -> line .)
+    ELSE_IF         reduce using rule 4 (language -> line .)
 
 
 state 5
@@ -300,25 +296,27 @@ state 5
     FALSE           reduce using rule 5 (line -> expression .)
     LPAREN          reduce using rule 5 (line -> expression .)
     WHILE           reduce using rule 5 (line -> expression .)
+    IF              reduce using rule 5 (line -> expression .)
     READ            reduce using rule 5 (line -> expression .)
     NOT             reduce using rule 5 (line -> expression .)
-    IF              reduce using rule 5 (line -> expression .)
     PRINT           reduce using rule 5 (line -> expression .)
     $end            reduce using rule 5 (line -> expression .)
     STOP            reduce using rule 5 (line -> expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+    ELSE            reduce using rule 5 (line -> expression .)
+    ELSE_IF         reduce using rule 5 (line -> expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
 
 state 6
@@ -333,12 +331,14 @@ state 6
     FALSE           reduce using rule 6 (line -> var_assign .)
     LPAREN          reduce using rule 6 (line -> var_assign .)
     WHILE           reduce using rule 6 (line -> var_assign .)
+    IF              reduce using rule 6 (line -> var_assign .)
     READ            reduce using rule 6 (line -> var_assign .)
     NOT             reduce using rule 6 (line -> var_assign .)
-    IF              reduce using rule 6 (line -> var_assign .)
     PRINT           reduce using rule 6 (line -> var_assign .)
     $end            reduce using rule 6 (line -> var_assign .)
     STOP            reduce using rule 6 (line -> var_assign .)
+    ELSE            reduce using rule 6 (line -> var_assign .)
+    ELSE_IF         reduce using rule 6 (line -> var_assign .)
 
 
 state 7
@@ -353,12 +353,14 @@ state 7
     FALSE           reduce using rule 7 (line -> iterative .)
     LPAREN          reduce using rule 7 (line -> iterative .)
     WHILE           reduce using rule 7 (line -> iterative .)
+    IF              reduce using rule 7 (line -> iterative .)
     READ            reduce using rule 7 (line -> iterative .)
     NOT             reduce using rule 7 (line -> iterative .)
-    IF              reduce using rule 7 (line -> iterative .)
     PRINT           reduce using rule 7 (line -> iterative .)
     $end            reduce using rule 7 (line -> iterative .)
     STOP            reduce using rule 7 (line -> iterative .)
+    ELSE            reduce using rule 7 (line -> iterative .)
+    ELSE_IF         reduce using rule 7 (line -> iterative .)
 
 
 state 8
@@ -373,12 +375,14 @@ state 8
     FALSE           reduce using rule 8 (line -> conditional .)
     LPAREN          reduce using rule 8 (line -> conditional .)
     WHILE           reduce using rule 8 (line -> conditional .)
+    IF              reduce using rule 8 (line -> conditional .)
     READ            reduce using rule 8 (line -> conditional .)
     NOT             reduce using rule 8 (line -> conditional .)
-    IF              reduce using rule 8 (line -> conditional .)
     PRINT           reduce using rule 8 (line -> conditional .)
     $end            reduce using rule 8 (line -> conditional .)
     STOP            reduce using rule 8 (line -> conditional .)
+    ELSE            reduce using rule 8 (line -> conditional .)
+    ELSE_IF         reduce using rule 8 (line -> conditional .)
 
 
 state 9
@@ -393,12 +397,14 @@ state 9
     FALSE           reduce using rule 9 (line -> output .)
     LPAREN          reduce using rule 9 (line -> output .)
     WHILE           reduce using rule 9 (line -> output .)
+    IF              reduce using rule 9 (line -> output .)
     READ            reduce using rule 9 (line -> output .)
     NOT             reduce using rule 9 (line -> output .)
-    IF              reduce using rule 9 (line -> output .)
     PRINT           reduce using rule 9 (line -> output .)
     $end            reduce using rule 9 (line -> output .)
     STOP            reduce using rule 9 (line -> output .)
+    ELSE            reduce using rule 9 (line -> output .)
+    ELSE_IF         reduce using rule 9 (line -> output .)
 
 
 state 10
@@ -413,12 +419,14 @@ state 10
     FALSE           reduce using rule 10 (line -> input .)
     LPAREN          reduce using rule 10 (line -> input .)
     WHILE           reduce using rule 10 (line -> input .)
+    IF              reduce using rule 10 (line -> input .)
     READ            reduce using rule 10 (line -> input .)
     NOT             reduce using rule 10 (line -> input .)
-    IF              reduce using rule 10 (line -> input .)
     PRINT           reduce using rule 10 (line -> input .)
     $end            reduce using rule 10 (line -> input .)
     STOP            reduce using rule 10 (line -> input .)
+    ELSE            reduce using rule 10 (line -> input .)
+    ELSE_IF         reduce using rule 10 (line -> input .)
 
 
 state 11
@@ -447,13 +455,15 @@ state 11
     FALSE           reduce using rule 14 (expression -> NAME .)
     LPAREN          reduce using rule 14 (expression -> NAME .)
     WHILE           reduce using rule 14 (expression -> NAME .)
+    IF              reduce using rule 14 (expression -> NAME .)
     READ            reduce using rule 14 (expression -> NAME .)
     NOT             reduce using rule 14 (expression -> NAME .)
-    IF              reduce using rule 14 (expression -> NAME .)
     PRINT           reduce using rule 14 (expression -> NAME .)
     $end            reduce using rule 14 (expression -> NAME .)
     STOP            reduce using rule 14 (expression -> NAME .)
-    EQUALS          shift and go to state 41
+    ELSE            reduce using rule 14 (expression -> NAME .)
+    ELSE_IF         reduce using rule 14 (expression -> NAME .)
+    EQUALS          shift and go to state 39
 
 
 state 12
@@ -481,14 +491,16 @@ state 12
     FALSE           reduce using rule 16 (expression -> expression_operation .)
     LPAREN          reduce using rule 16 (expression -> expression_operation .)
     WHILE           reduce using rule 16 (expression -> expression_operation .)
+    IF              reduce using rule 16 (expression -> expression_operation .)
     READ            reduce using rule 16 (expression -> expression_operation .)
     NOT             reduce using rule 16 (expression -> expression_operation .)
-    IF              reduce using rule 16 (expression -> expression_operation .)
     PRINT           reduce using rule 16 (expression -> expression_operation .)
     $end            reduce using rule 16 (expression -> expression_operation .)
     RPAREN          reduce using rule 16 (expression -> expression_operation .)
     THEN            reduce using rule 16 (expression -> expression_operation .)
     STOP            reduce using rule 16 (expression -> expression_operation .)
+    ELSE            reduce using rule 16 (expression -> expression_operation .)
+    ELSE_IF         reduce using rule 16 (expression -> expression_operation .)
 
 
 state 13
@@ -516,14 +528,16 @@ state 13
     FALSE           reduce using rule 31 (expression -> INT .)
     LPAREN          reduce using rule 31 (expression -> INT .)
     WHILE           reduce using rule 31 (expression -> INT .)
+    IF              reduce using rule 31 (expression -> INT .)
     READ            reduce using rule 31 (expression -> INT .)
     NOT             reduce using rule 31 (expression -> INT .)
-    IF              reduce using rule 31 (expression -> INT .)
     PRINT           reduce using rule 31 (expression -> INT .)
     $end            reduce using rule 31 (expression -> INT .)
     RPAREN          reduce using rule 31 (expression -> INT .)
     THEN            reduce using rule 31 (expression -> INT .)
     STOP            reduce using rule 31 (expression -> INT .)
+    ELSE            reduce using rule 31 (expression -> INT .)
+    ELSE_IF         reduce using rule 31 (expression -> INT .)
 
 
 state 14
@@ -551,14 +565,16 @@ state 14
     FALSE           reduce using rule 32 (expression -> FLOAT .)
     LPAREN          reduce using rule 32 (expression -> FLOAT .)
     WHILE           reduce using rule 32 (expression -> FLOAT .)
+    IF              reduce using rule 32 (expression -> FLOAT .)
     READ            reduce using rule 32 (expression -> FLOAT .)
     NOT             reduce using rule 32 (expression -> FLOAT .)
-    IF              reduce using rule 32 (expression -> FLOAT .)
     PRINT           reduce using rule 32 (expression -> FLOAT .)
     $end            reduce using rule 32 (expression -> FLOAT .)
     RPAREN          reduce using rule 32 (expression -> FLOAT .)
     THEN            reduce using rule 32 (expression -> FLOAT .)
     STOP            reduce using rule 32 (expression -> FLOAT .)
+    ELSE            reduce using rule 32 (expression -> FLOAT .)
+    ELSE_IF         reduce using rule 32 (expression -> FLOAT .)
 
 
 state 15
@@ -586,14 +602,16 @@ state 15
     FALSE           reduce using rule 33 (expression -> STRING .)
     LPAREN          reduce using rule 33 (expression -> STRING .)
     WHILE           reduce using rule 33 (expression -> STRING .)
+    IF              reduce using rule 33 (expression -> STRING .)
     READ            reduce using rule 33 (expression -> STRING .)
     NOT             reduce using rule 33 (expression -> STRING .)
-    IF              reduce using rule 33 (expression -> STRING .)
     PRINT           reduce using rule 33 (expression -> STRING .)
     $end            reduce using rule 33 (expression -> STRING .)
     RPAREN          reduce using rule 33 (expression -> STRING .)
     THEN            reduce using rule 33 (expression -> STRING .)
     STOP            reduce using rule 33 (expression -> STRING .)
+    ELSE            reduce using rule 33 (expression -> STRING .)
+    ELSE_IF         reduce using rule 33 (expression -> STRING .)
 
 
 state 16
@@ -621,14 +639,16 @@ state 16
     FALSE           reduce using rule 34 (expression -> TRUE .)
     LPAREN          reduce using rule 34 (expression -> TRUE .)
     WHILE           reduce using rule 34 (expression -> TRUE .)
+    IF              reduce using rule 34 (expression -> TRUE .)
     READ            reduce using rule 34 (expression -> TRUE .)
     NOT             reduce using rule 34 (expression -> TRUE .)
-    IF              reduce using rule 34 (expression -> TRUE .)
     PRINT           reduce using rule 34 (expression -> TRUE .)
     $end            reduce using rule 34 (expression -> TRUE .)
     RPAREN          reduce using rule 34 (expression -> TRUE .)
     THEN            reduce using rule 34 (expression -> TRUE .)
     STOP            reduce using rule 34 (expression -> TRUE .)
+    ELSE            reduce using rule 34 (expression -> TRUE .)
+    ELSE_IF         reduce using rule 34 (expression -> TRUE .)
 
 
 state 17
@@ -656,14 +676,16 @@ state 17
     FALSE           reduce using rule 35 (expression -> FALSE .)
     LPAREN          reduce using rule 35 (expression -> FALSE .)
     WHILE           reduce using rule 35 (expression -> FALSE .)
+    IF              reduce using rule 35 (expression -> FALSE .)
     READ            reduce using rule 35 (expression -> FALSE .)
     NOT             reduce using rule 35 (expression -> FALSE .)
-    IF              reduce using rule 35 (expression -> FALSE .)
     PRINT           reduce using rule 35 (expression -> FALSE .)
     $end            reduce using rule 35 (expression -> FALSE .)
     RPAREN          reduce using rule 35 (expression -> FALSE .)
     THEN            reduce using rule 35 (expression -> FALSE .)
     STOP            reduce using rule 35 (expression -> FALSE .)
+    ELSE            reduce using rule 35 (expression -> FALSE .)
+    ELSE_IF         reduce using rule 35 (expression -> FALSE .)
 
 
 state 18
@@ -692,21 +714,21 @@ state 18
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 42
+    expression                     shift and go to state 40
     expression_operation           shift and go to state 12
 
 state 19
 
-    (41) iterative -> WHILE . expression THEN language STOP
+    (43) iterative -> WHILE . expression THEN language STOP
     (14) expression -> . NAME
     (16) expression -> . expression_operation
     (31) expression -> . INT
@@ -730,59 +752,57 @@ state 19
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 44
+    expression                     shift and go to state 42
     expression_operation           shift and go to state 12
 
 state 20
 
-    (37) conditional -> conditional_if .
+    (37) conditional -> IF . expression THEN language else_if_blocks else_block STOP
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
 
-    NAME            reduce using rule 37 (conditional -> conditional_if .)
-    INT             reduce using rule 37 (conditional -> conditional_if .)
-    FLOAT           reduce using rule 37 (conditional -> conditional_if .)
-    STRING          reduce using rule 37 (conditional -> conditional_if .)
-    TRUE            reduce using rule 37 (conditional -> conditional_if .)
-    FALSE           reduce using rule 37 (conditional -> conditional_if .)
-    LPAREN          reduce using rule 37 (conditional -> conditional_if .)
-    WHILE           reduce using rule 37 (conditional -> conditional_if .)
-    READ            reduce using rule 37 (conditional -> conditional_if .)
-    NOT             reduce using rule 37 (conditional -> conditional_if .)
-    IF              reduce using rule 37 (conditional -> conditional_if .)
-    PRINT           reduce using rule 37 (conditional -> conditional_if .)
-    $end            reduce using rule 37 (conditional -> conditional_if .)
-    STOP            reduce using rule 37 (conditional -> conditional_if .)
+    NAME            shift and go to state 41
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    NOT             shift and go to state 23
 
+    expression                     shift and go to state 43
+    expression_operation           shift and go to state 12
 
 state 21
-
-    (38) conditional -> conditional_if_else .
-
-    NAME            reduce using rule 38 (conditional -> conditional_if_else .)
-    INT             reduce using rule 38 (conditional -> conditional_if_else .)
-    FLOAT           reduce using rule 38 (conditional -> conditional_if_else .)
-    STRING          reduce using rule 38 (conditional -> conditional_if_else .)
-    TRUE            reduce using rule 38 (conditional -> conditional_if_else .)
-    FALSE           reduce using rule 38 (conditional -> conditional_if_else .)
-    LPAREN          reduce using rule 38 (conditional -> conditional_if_else .)
-    WHILE           reduce using rule 38 (conditional -> conditional_if_else .)
-    READ            reduce using rule 38 (conditional -> conditional_if_else .)
-    NOT             reduce using rule 38 (conditional -> conditional_if_else .)
-    IF              reduce using rule 38 (conditional -> conditional_if_else .)
-    PRINT           reduce using rule 38 (conditional -> conditional_if_else .)
-    $end            reduce using rule 38 (conditional -> conditional_if_else .)
-    STOP            reduce using rule 38 (conditional -> conditional_if_else .)
-
-
-state 22
 
     (12) output -> output_print .
 
@@ -794,22 +814,24 @@ state 22
     FALSE           reduce using rule 12 (output -> output_print .)
     LPAREN          reduce using rule 12 (output -> output_print .)
     WHILE           reduce using rule 12 (output -> output_print .)
+    IF              reduce using rule 12 (output -> output_print .)
     READ            reduce using rule 12 (output -> output_print .)
     NOT             reduce using rule 12 (output -> output_print .)
-    IF              reduce using rule 12 (output -> output_print .)
     PRINT           reduce using rule 12 (output -> output_print .)
     $end            reduce using rule 12 (output -> output_print .)
     STOP            reduce using rule 12 (output -> output_print .)
+    ELSE            reduce using rule 12 (output -> output_print .)
+    ELSE_IF         reduce using rule 12 (output -> output_print .)
 
 
-state 23
+state 22
 
     (11) input -> READ . LPAREN NAME RPAREN
 
-    LPAREN          shift and go to state 45
+    LPAREN          shift and go to state 44
 
 
-state 24
+state 23
 
     (30) expression_operation -> NOT . expression
     (14) expression -> . NAME
@@ -835,65 +857,26 @@ state 24
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 46
+    expression                     shift and go to state 45
     expression_operation           shift and go to state 12
 
-state 25
-
-    (40) conditional_if -> IF . expression THEN language STOP
-    (39) conditional_if_else -> IF . expression THEN language STOP ELSE THEN language STOP
-    (14) expression -> . NAME
-    (16) expression -> . expression_operation
-    (31) expression -> . INT
-    (32) expression -> . FLOAT
-    (33) expression -> . STRING
-    (34) expression -> . TRUE
-    (35) expression -> . FALSE
-    (36) expression -> . LPAREN expression RPAREN
-    (17) expression_operation -> . expression MULTIPLY expression
-    (18) expression_operation -> . expression DIVIDE expression
-    (19) expression_operation -> . expression MODULO expression
-    (20) expression_operation -> . expression PLUS expression
-    (21) expression_operation -> . expression MINUS expression
-    (22) expression_operation -> . expression LD expression
-    (23) expression_operation -> . expression LDEQ expression
-    (24) expression_operation -> . expression GD expression
-    (25) expression_operation -> . expression GDEQ expression
-    (26) expression_operation -> . expression EQUALEQUAL expression
-    (27) expression_operation -> . expression NOTEQ expression
-    (28) expression_operation -> . expression AND expression
-    (29) expression_operation -> . expression OR expression
-    (30) expression_operation -> . NOT expression
-
-    NAME            shift and go to state 43
-    INT             shift and go to state 13
-    FLOAT           shift and go to state 14
-    STRING          shift and go to state 15
-    TRUE            shift and go to state 16
-    FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
-
-    expression                     shift and go to state 47
-    expression_operation           shift and go to state 12
-
-state 26
+state 24
 
     (13) output_print -> PRINT . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 48
+    LPAREN          shift and go to state 46
 
 
-state 27
+state 25
 
     (3) language -> language line .
 
@@ -905,15 +888,17 @@ state 27
     FALSE           reduce using rule 3 (language -> language line .)
     LPAREN          reduce using rule 3 (language -> language line .)
     WHILE           reduce using rule 3 (language -> language line .)
+    IF              reduce using rule 3 (language -> language line .)
     READ            reduce using rule 3 (language -> language line .)
     NOT             reduce using rule 3 (language -> language line .)
-    IF              reduce using rule 3 (language -> language line .)
     PRINT           reduce using rule 3 (language -> language line .)
     $end            reduce using rule 3 (language -> language line .)
     STOP            reduce using rule 3 (language -> language line .)
+    ELSE            reduce using rule 3 (language -> language line .)
+    ELSE_IF         reduce using rule 3 (language -> language line .)
 
 
-state 28
+state 26
 
     (17) expression_operation -> expression MULTIPLY . expression
     (14) expression -> . NAME
@@ -939,19 +924,19 @@ state 28
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 49
+    expression                     shift and go to state 47
     expression_operation           shift and go to state 12
 
-state 29
+state 27
 
     (18) expression_operation -> expression DIVIDE . expression
     (14) expression -> . NAME
@@ -977,19 +962,19 @@ state 29
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 50
+    expression                     shift and go to state 48
     expression_operation           shift and go to state 12
 
-state 30
+state 28
 
     (19) expression_operation -> expression MODULO . expression
     (14) expression -> . NAME
@@ -1015,19 +1000,19 @@ state 30
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 51
+    expression                     shift and go to state 49
     expression_operation           shift and go to state 12
 
-state 31
+state 29
 
     (20) expression_operation -> expression PLUS . expression
     (14) expression -> . NAME
@@ -1053,19 +1038,19 @@ state 31
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 52
+    expression                     shift and go to state 50
     expression_operation           shift and go to state 12
 
-state 32
+state 30
 
     (21) expression_operation -> expression MINUS . expression
     (14) expression -> . NAME
@@ -1091,19 +1076,19 @@ state 32
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 53
+    expression                     shift and go to state 51
     expression_operation           shift and go to state 12
 
-state 33
+state 31
 
     (22) expression_operation -> expression LD . expression
     (14) expression -> . NAME
@@ -1129,19 +1114,19 @@ state 33
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 54
+    expression                     shift and go to state 52
     expression_operation           shift and go to state 12
 
-state 34
+state 32
 
     (23) expression_operation -> expression LDEQ . expression
     (14) expression -> . NAME
@@ -1167,19 +1152,19 @@ state 34
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 55
+    expression                     shift and go to state 53
     expression_operation           shift and go to state 12
 
-state 35
+state 33
 
     (24) expression_operation -> expression GD . expression
     (14) expression -> . NAME
@@ -1205,19 +1190,19 @@ state 35
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 56
+    expression                     shift and go to state 54
     expression_operation           shift and go to state 12
 
-state 36
+state 34
 
     (25) expression_operation -> expression GDEQ . expression
     (14) expression -> . NAME
@@ -1243,19 +1228,19 @@ state 36
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 57
+    expression                     shift and go to state 55
     expression_operation           shift and go to state 12
 
-state 37
+state 35
 
     (26) expression_operation -> expression EQUALEQUAL . expression
     (14) expression -> . NAME
@@ -1281,19 +1266,19 @@ state 37
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 58
+    expression                     shift and go to state 56
     expression_operation           shift and go to state 12
 
-state 38
+state 36
 
     (27) expression_operation -> expression NOTEQ . expression
     (14) expression -> . NAME
@@ -1319,19 +1304,19 @@ state 38
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 59
+    expression                     shift and go to state 57
     expression_operation           shift and go to state 12
 
-state 39
+state 37
 
     (28) expression_operation -> expression AND . expression
     (14) expression -> . NAME
@@ -1357,19 +1342,19 @@ state 39
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 60
+    expression                     shift and go to state 58
     expression_operation           shift and go to state 12
 
-state 40
+state 38
 
     (29) expression_operation -> expression OR . expression
     (14) expression -> . NAME
@@ -1395,19 +1380,19 @@ state 40
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 61
+    expression                     shift and go to state 59
     expression_operation           shift and go to state 12
 
-state 41
+state 39
 
     (15) var_assign -> NAME EQUALS . expression
     (14) expression -> . NAME
@@ -1433,19 +1418,19 @@ state 41
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 62
+    expression                     shift and go to state 60
     expression_operation           shift and go to state 12
 
-state 42
+state 40
 
     (36) expression -> LPAREN expression . RPAREN
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1462,23 +1447,23 @@ state 42
     (28) expression_operation -> expression . AND expression
     (29) expression_operation -> expression . OR expression
 
-    RPAREN          shift and go to state 63
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+    RPAREN          shift and go to state 61
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
 
-state 43
+state 41
 
     (14) expression -> NAME .
 
@@ -1505,17 +1490,19 @@ state 43
     FALSE           reduce using rule 14 (expression -> NAME .)
     LPAREN          reduce using rule 14 (expression -> NAME .)
     WHILE           reduce using rule 14 (expression -> NAME .)
+    IF              reduce using rule 14 (expression -> NAME .)
     READ            reduce using rule 14 (expression -> NAME .)
     NOT             reduce using rule 14 (expression -> NAME .)
-    IF              reduce using rule 14 (expression -> NAME .)
     PRINT           reduce using rule 14 (expression -> NAME .)
     $end            reduce using rule 14 (expression -> NAME .)
     STOP            reduce using rule 14 (expression -> NAME .)
+    ELSE            reduce using rule 14 (expression -> NAME .)
+    ELSE_IF         reduce using rule 14 (expression -> NAME .)
 
 
-state 44
+state 42
 
-    (41) iterative -> WHILE expression . THEN language STOP
+    (43) iterative -> WHILE expression . THEN language STOP
     (17) expression_operation -> expression . MULTIPLY expression
     (18) expression_operation -> expression . DIVIDE expression
     (19) expression_operation -> expression . MODULO expression
@@ -1530,30 +1517,63 @@ state 44
     (28) expression_operation -> expression . AND expression
     (29) expression_operation -> expression . OR expression
 
-    THEN            shift and go to state 64
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+    THEN            shift and go to state 62
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
 
-state 45
+state 43
+
+    (37) conditional -> IF expression . THEN language else_if_blocks else_block STOP
+    (17) expression_operation -> expression . MULTIPLY expression
+    (18) expression_operation -> expression . DIVIDE expression
+    (19) expression_operation -> expression . MODULO expression
+    (20) expression_operation -> expression . PLUS expression
+    (21) expression_operation -> expression . MINUS expression
+    (22) expression_operation -> expression . LD expression
+    (23) expression_operation -> expression . LDEQ expression
+    (24) expression_operation -> expression . GD expression
+    (25) expression_operation -> expression . GDEQ expression
+    (26) expression_operation -> expression . EQUALEQUAL expression
+    (27) expression_operation -> expression . NOTEQ expression
+    (28) expression_operation -> expression . AND expression
+    (29) expression_operation -> expression . OR expression
+
+    THEN            shift and go to state 63
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
+
+
+state 44
 
     (11) input -> READ LPAREN . NAME RPAREN
 
-    NAME            shift and go to state 65
+    NAME            shift and go to state 64
 
 
-state 46
+state 45
 
     (30) expression_operation -> NOT expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1591,65 +1611,33 @@ state 46
     FALSE           reduce using rule 30 (expression_operation -> NOT expression .)
     LPAREN          reduce using rule 30 (expression_operation -> NOT expression .)
     WHILE           reduce using rule 30 (expression_operation -> NOT expression .)
+    IF              reduce using rule 30 (expression_operation -> NOT expression .)
     READ            reduce using rule 30 (expression_operation -> NOT expression .)
     NOT             reduce using rule 30 (expression_operation -> NOT expression .)
-    IF              reduce using rule 30 (expression_operation -> NOT expression .)
     PRINT           reduce using rule 30 (expression_operation -> NOT expression .)
     $end            reduce using rule 30 (expression_operation -> NOT expression .)
     RPAREN          reduce using rule 30 (expression_operation -> NOT expression .)
     THEN            reduce using rule 30 (expression_operation -> NOT expression .)
     STOP            reduce using rule 30 (expression_operation -> NOT expression .)
+    ELSE            reduce using rule 30 (expression_operation -> NOT expression .)
+    ELSE_IF         reduce using rule 30 (expression_operation -> NOT expression .)
 
-  ! MULTIPLY        [ shift and go to state 28 ]
-  ! DIVIDE          [ shift and go to state 29 ]
-  ! MODULO          [ shift and go to state 30 ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
-
-
-state 47
-
-    (40) conditional_if -> IF expression . THEN language STOP
-    (39) conditional_if_else -> IF expression . THEN language STOP ELSE THEN language STOP
-    (17) expression_operation -> expression . MULTIPLY expression
-    (18) expression_operation -> expression . DIVIDE expression
-    (19) expression_operation -> expression . MODULO expression
-    (20) expression_operation -> expression . PLUS expression
-    (21) expression_operation -> expression . MINUS expression
-    (22) expression_operation -> expression . LD expression
-    (23) expression_operation -> expression . LDEQ expression
-    (24) expression_operation -> expression . GD expression
-    (25) expression_operation -> expression . GDEQ expression
-    (26) expression_operation -> expression . EQUALEQUAL expression
-    (27) expression_operation -> expression . NOTEQ expression
-    (28) expression_operation -> expression . AND expression
-    (29) expression_operation -> expression . OR expression
-
-    THEN            shift and go to state 66
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+  ! MULTIPLY        [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! MODULO          [ shift and go to state 28 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 48
+state 46
 
     (13) output_print -> PRINT LPAREN . expression RPAREN
     (14) expression -> . NAME
@@ -1675,19 +1663,19 @@ state 48
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 43
+    NAME            shift and go to state 41
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
-    NOT             shift and go to state 24
+    NOT             shift and go to state 23
 
-    expression                     shift and go to state 67
+    expression                     shift and go to state 65
     expression_operation           shift and go to state 12
 
-state 49
+state 47
 
     (17) expression_operation -> expression MULTIPLY expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1725,31 +1713,33 @@ state 49
     FALSE           reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     LPAREN          reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     WHILE           reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
+    IF              reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     READ            reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     NOT             reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
-    IF              reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     PRINT           reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     $end            reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     RPAREN          reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     THEN            reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
     STOP            reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
+    ELSE            reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
+    ELSE_IF         reduce using rule 17 (expression_operation -> expression MULTIPLY expression .)
 
-  ! MULTIPLY        [ shift and go to state 28 ]
-  ! DIVIDE          [ shift and go to state 29 ]
-  ! MODULO          [ shift and go to state 30 ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! MULTIPLY        [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! MODULO          [ shift and go to state 28 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 50
+state 48
 
     (18) expression_operation -> expression DIVIDE expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1787,31 +1777,33 @@ state 50
     FALSE           reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     LPAREN          reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     WHILE           reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
+    IF              reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     READ            reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     NOT             reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
-    IF              reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     PRINT           reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     $end            reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     RPAREN          reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     THEN            reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
     STOP            reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
+    ELSE            reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
+    ELSE_IF         reduce using rule 18 (expression_operation -> expression DIVIDE expression .)
 
-  ! MULTIPLY        [ shift and go to state 28 ]
-  ! DIVIDE          [ shift and go to state 29 ]
-  ! MODULO          [ shift and go to state 30 ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! MULTIPLY        [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! MODULO          [ shift and go to state 28 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 51
+state 49
 
     (19) expression_operation -> expression MODULO expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1849,31 +1841,33 @@ state 51
     FALSE           reduce using rule 19 (expression_operation -> expression MODULO expression .)
     LPAREN          reduce using rule 19 (expression_operation -> expression MODULO expression .)
     WHILE           reduce using rule 19 (expression_operation -> expression MODULO expression .)
+    IF              reduce using rule 19 (expression_operation -> expression MODULO expression .)
     READ            reduce using rule 19 (expression_operation -> expression MODULO expression .)
     NOT             reduce using rule 19 (expression_operation -> expression MODULO expression .)
-    IF              reduce using rule 19 (expression_operation -> expression MODULO expression .)
     PRINT           reduce using rule 19 (expression_operation -> expression MODULO expression .)
     $end            reduce using rule 19 (expression_operation -> expression MODULO expression .)
     RPAREN          reduce using rule 19 (expression_operation -> expression MODULO expression .)
     THEN            reduce using rule 19 (expression_operation -> expression MODULO expression .)
     STOP            reduce using rule 19 (expression_operation -> expression MODULO expression .)
+    ELSE            reduce using rule 19 (expression_operation -> expression MODULO expression .)
+    ELSE_IF         reduce using rule 19 (expression_operation -> expression MODULO expression .)
 
-  ! MULTIPLY        [ shift and go to state 28 ]
-  ! DIVIDE          [ shift and go to state 29 ]
-  ! MODULO          [ shift and go to state 30 ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! MULTIPLY        [ shift and go to state 26 ]
+  ! DIVIDE          [ shift and go to state 27 ]
+  ! MODULO          [ shift and go to state 28 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 52
+state 50
 
     (20) expression_operation -> expression PLUS expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1908,34 +1902,36 @@ state 52
     FALSE           reduce using rule 20 (expression_operation -> expression PLUS expression .)
     LPAREN          reduce using rule 20 (expression_operation -> expression PLUS expression .)
     WHILE           reduce using rule 20 (expression_operation -> expression PLUS expression .)
+    IF              reduce using rule 20 (expression_operation -> expression PLUS expression .)
     READ            reduce using rule 20 (expression_operation -> expression PLUS expression .)
     NOT             reduce using rule 20 (expression_operation -> expression PLUS expression .)
-    IF              reduce using rule 20 (expression_operation -> expression PLUS expression .)
     PRINT           reduce using rule 20 (expression_operation -> expression PLUS expression .)
     $end            reduce using rule 20 (expression_operation -> expression PLUS expression .)
     RPAREN          reduce using rule 20 (expression_operation -> expression PLUS expression .)
     THEN            reduce using rule 20 (expression_operation -> expression PLUS expression .)
     STOP            reduce using rule 20 (expression_operation -> expression PLUS expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
+    ELSE            reduce using rule 20 (expression_operation -> expression PLUS expression .)
+    ELSE_IF         reduce using rule 20 (expression_operation -> expression PLUS expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
 
   ! MULTIPLY        [ reduce using rule 20 (expression_operation -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 20 (expression_operation -> expression PLUS expression .) ]
   ! MODULO          [ reduce using rule 20 (expression_operation -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 53
+state 51
 
     (21) expression_operation -> expression MINUS expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -1970,34 +1966,36 @@ state 53
     FALSE           reduce using rule 21 (expression_operation -> expression MINUS expression .)
     LPAREN          reduce using rule 21 (expression_operation -> expression MINUS expression .)
     WHILE           reduce using rule 21 (expression_operation -> expression MINUS expression .)
+    IF              reduce using rule 21 (expression_operation -> expression MINUS expression .)
     READ            reduce using rule 21 (expression_operation -> expression MINUS expression .)
     NOT             reduce using rule 21 (expression_operation -> expression MINUS expression .)
-    IF              reduce using rule 21 (expression_operation -> expression MINUS expression .)
     PRINT           reduce using rule 21 (expression_operation -> expression MINUS expression .)
     $end            reduce using rule 21 (expression_operation -> expression MINUS expression .)
     RPAREN          reduce using rule 21 (expression_operation -> expression MINUS expression .)
     THEN            reduce using rule 21 (expression_operation -> expression MINUS expression .)
     STOP            reduce using rule 21 (expression_operation -> expression MINUS expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
+    ELSE            reduce using rule 21 (expression_operation -> expression MINUS expression .)
+    ELSE_IF         reduce using rule 21 (expression_operation -> expression MINUS expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
 
   ! MULTIPLY        [ reduce using rule 21 (expression_operation -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 21 (expression_operation -> expression MINUS expression .) ]
   ! MODULO          [ reduce using rule 21 (expression_operation -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 31 ]
-  ! MINUS           [ shift and go to state 32 ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! PLUS            [ shift and go to state 29 ]
+  ! MINUS           [ shift and go to state 30 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 54
+state 52
 
     (22) expression_operation -> expression LD expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2030,36 +2028,38 @@ state 54
     FALSE           reduce using rule 22 (expression_operation -> expression LD expression .)
     LPAREN          reduce using rule 22 (expression_operation -> expression LD expression .)
     WHILE           reduce using rule 22 (expression_operation -> expression LD expression .)
+    IF              reduce using rule 22 (expression_operation -> expression LD expression .)
     READ            reduce using rule 22 (expression_operation -> expression LD expression .)
     NOT             reduce using rule 22 (expression_operation -> expression LD expression .)
-    IF              reduce using rule 22 (expression_operation -> expression LD expression .)
     PRINT           reduce using rule 22 (expression_operation -> expression LD expression .)
     $end            reduce using rule 22 (expression_operation -> expression LD expression .)
     RPAREN          reduce using rule 22 (expression_operation -> expression LD expression .)
     THEN            reduce using rule 22 (expression_operation -> expression LD expression .)
     STOP            reduce using rule 22 (expression_operation -> expression LD expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
+    ELSE            reduce using rule 22 (expression_operation -> expression LD expression .)
+    ELSE_IF         reduce using rule 22 (expression_operation -> expression LD expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
 
   ! MULTIPLY        [ reduce using rule 22 (expression_operation -> expression LD expression .) ]
   ! DIVIDE          [ reduce using rule 22 (expression_operation -> expression LD expression .) ]
   ! MODULO          [ reduce using rule 22 (expression_operation -> expression LD expression .) ]
   ! PLUS            [ reduce using rule 22 (expression_operation -> expression LD expression .) ]
   ! MINUS           [ reduce using rule 22 (expression_operation -> expression LD expression .) ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 55
+state 53
 
     (23) expression_operation -> expression LDEQ expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2092,36 +2092,38 @@ state 55
     FALSE           reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     LPAREN          reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     WHILE           reduce using rule 23 (expression_operation -> expression LDEQ expression .)
+    IF              reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     READ            reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     NOT             reduce using rule 23 (expression_operation -> expression LDEQ expression .)
-    IF              reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     PRINT           reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     $end            reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     RPAREN          reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     THEN            reduce using rule 23 (expression_operation -> expression LDEQ expression .)
     STOP            reduce using rule 23 (expression_operation -> expression LDEQ expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
+    ELSE            reduce using rule 23 (expression_operation -> expression LDEQ expression .)
+    ELSE_IF         reduce using rule 23 (expression_operation -> expression LDEQ expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
 
   ! MULTIPLY        [ reduce using rule 23 (expression_operation -> expression LDEQ expression .) ]
   ! DIVIDE          [ reduce using rule 23 (expression_operation -> expression LDEQ expression .) ]
   ! MODULO          [ reduce using rule 23 (expression_operation -> expression LDEQ expression .) ]
   ! PLUS            [ reduce using rule 23 (expression_operation -> expression LDEQ expression .) ]
   ! MINUS           [ reduce using rule 23 (expression_operation -> expression LDEQ expression .) ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 56
+state 54
 
     (24) expression_operation -> expression GD expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2154,36 +2156,38 @@ state 56
     FALSE           reduce using rule 24 (expression_operation -> expression GD expression .)
     LPAREN          reduce using rule 24 (expression_operation -> expression GD expression .)
     WHILE           reduce using rule 24 (expression_operation -> expression GD expression .)
+    IF              reduce using rule 24 (expression_operation -> expression GD expression .)
     READ            reduce using rule 24 (expression_operation -> expression GD expression .)
     NOT             reduce using rule 24 (expression_operation -> expression GD expression .)
-    IF              reduce using rule 24 (expression_operation -> expression GD expression .)
     PRINT           reduce using rule 24 (expression_operation -> expression GD expression .)
     $end            reduce using rule 24 (expression_operation -> expression GD expression .)
     RPAREN          reduce using rule 24 (expression_operation -> expression GD expression .)
     THEN            reduce using rule 24 (expression_operation -> expression GD expression .)
     STOP            reduce using rule 24 (expression_operation -> expression GD expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
+    ELSE            reduce using rule 24 (expression_operation -> expression GD expression .)
+    ELSE_IF         reduce using rule 24 (expression_operation -> expression GD expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
 
   ! MULTIPLY        [ reduce using rule 24 (expression_operation -> expression GD expression .) ]
   ! DIVIDE          [ reduce using rule 24 (expression_operation -> expression GD expression .) ]
   ! MODULO          [ reduce using rule 24 (expression_operation -> expression GD expression .) ]
   ! PLUS            [ reduce using rule 24 (expression_operation -> expression GD expression .) ]
   ! MINUS           [ reduce using rule 24 (expression_operation -> expression GD expression .) ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 57
+state 55
 
     (25) expression_operation -> expression GDEQ expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2216,36 +2220,38 @@ state 57
     FALSE           reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     LPAREN          reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     WHILE           reduce using rule 25 (expression_operation -> expression GDEQ expression .)
+    IF              reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     READ            reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     NOT             reduce using rule 25 (expression_operation -> expression GDEQ expression .)
-    IF              reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     PRINT           reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     $end            reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     RPAREN          reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     THEN            reduce using rule 25 (expression_operation -> expression GDEQ expression .)
     STOP            reduce using rule 25 (expression_operation -> expression GDEQ expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
+    ELSE            reduce using rule 25 (expression_operation -> expression GDEQ expression .)
+    ELSE_IF         reduce using rule 25 (expression_operation -> expression GDEQ expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
 
   ! MULTIPLY        [ reduce using rule 25 (expression_operation -> expression GDEQ expression .) ]
   ! DIVIDE          [ reduce using rule 25 (expression_operation -> expression GDEQ expression .) ]
   ! MODULO          [ reduce using rule 25 (expression_operation -> expression GDEQ expression .) ]
   ! PLUS            [ reduce using rule 25 (expression_operation -> expression GDEQ expression .) ]
   ! MINUS           [ reduce using rule 25 (expression_operation -> expression GDEQ expression .) ]
-  ! LD              [ shift and go to state 33 ]
-  ! LDEQ            [ shift and go to state 34 ]
-  ! GD              [ shift and go to state 35 ]
-  ! GDEQ            [ shift and go to state 36 ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! LD              [ shift and go to state 31 ]
+  ! LDEQ            [ shift and go to state 32 ]
+  ! GD              [ shift and go to state 33 ]
+  ! GDEQ            [ shift and go to state 34 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 58
+state 56
 
     (26) expression_operation -> expression EQUALEQUAL expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2274,23 +2280,25 @@ state 58
     FALSE           reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     LPAREN          reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     WHILE           reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
+    IF              reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     READ            reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     NOT             reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
-    IF              reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     PRINT           reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     $end            reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     RPAREN          reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     THEN            reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
     STOP            reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
+    ELSE            reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
+    ELSE_IF         reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
 
   ! MULTIPLY        [ reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! DIVIDE          [ reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .) ]
@@ -2301,13 +2309,13 @@ state 58
   ! LDEQ            [ reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! GD              [ reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! GDEQ            [ reduce using rule 26 (expression_operation -> expression EQUALEQUAL expression .) ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 59
+state 57
 
     (27) expression_operation -> expression NOTEQ expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2336,23 +2344,25 @@ state 59
     FALSE           reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     LPAREN          reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     WHILE           reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
+    IF              reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     READ            reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     NOT             reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
-    IF              reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     PRINT           reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     $end            reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     RPAREN          reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     THEN            reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
     STOP            reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
+    ELSE            reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
+    ELSE_IF         reduce using rule 27 (expression_operation -> expression NOTEQ expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
 
   ! MULTIPLY        [ reduce using rule 27 (expression_operation -> expression NOTEQ expression .) ]
   ! DIVIDE          [ reduce using rule 27 (expression_operation -> expression NOTEQ expression .) ]
@@ -2363,13 +2373,13 @@ state 59
   ! LDEQ            [ reduce using rule 27 (expression_operation -> expression NOTEQ expression .) ]
   ! GD              [ reduce using rule 27 (expression_operation -> expression NOTEQ expression .) ]
   ! GDEQ            [ reduce using rule 27 (expression_operation -> expression NOTEQ expression .) ]
-  ! EQUALEQUAL      [ shift and go to state 37 ]
-  ! NOTEQ           [ shift and go to state 38 ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! EQUALEQUAL      [ shift and go to state 35 ]
+  ! NOTEQ           [ shift and go to state 36 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 60
+state 58
 
     (28) expression_operation -> expression AND expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2396,25 +2406,27 @@ state 60
     FALSE           reduce using rule 28 (expression_operation -> expression AND expression .)
     LPAREN          reduce using rule 28 (expression_operation -> expression AND expression .)
     WHILE           reduce using rule 28 (expression_operation -> expression AND expression .)
+    IF              reduce using rule 28 (expression_operation -> expression AND expression .)
     READ            reduce using rule 28 (expression_operation -> expression AND expression .)
     NOT             reduce using rule 28 (expression_operation -> expression AND expression .)
-    IF              reduce using rule 28 (expression_operation -> expression AND expression .)
     PRINT           reduce using rule 28 (expression_operation -> expression AND expression .)
     $end            reduce using rule 28 (expression_operation -> expression AND expression .)
     RPAREN          reduce using rule 28 (expression_operation -> expression AND expression .)
     THEN            reduce using rule 28 (expression_operation -> expression AND expression .)
     STOP            reduce using rule 28 (expression_operation -> expression AND expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
+    ELSE            reduce using rule 28 (expression_operation -> expression AND expression .)
+    ELSE_IF         reduce using rule 28 (expression_operation -> expression AND expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
 
   ! MULTIPLY        [ reduce using rule 28 (expression_operation -> expression AND expression .) ]
   ! DIVIDE          [ reduce using rule 28 (expression_operation -> expression AND expression .) ]
@@ -2427,11 +2439,11 @@ state 60
   ! GDEQ            [ reduce using rule 28 (expression_operation -> expression AND expression .) ]
   ! EQUALEQUAL      [ reduce using rule 28 (expression_operation -> expression AND expression .) ]
   ! NOTEQ           [ reduce using rule 28 (expression_operation -> expression AND expression .) ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 61
+state 59
 
     (29) expression_operation -> expression OR expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2458,25 +2470,27 @@ state 61
     FALSE           reduce using rule 29 (expression_operation -> expression OR expression .)
     LPAREN          reduce using rule 29 (expression_operation -> expression OR expression .)
     WHILE           reduce using rule 29 (expression_operation -> expression OR expression .)
+    IF              reduce using rule 29 (expression_operation -> expression OR expression .)
     READ            reduce using rule 29 (expression_operation -> expression OR expression .)
     NOT             reduce using rule 29 (expression_operation -> expression OR expression .)
-    IF              reduce using rule 29 (expression_operation -> expression OR expression .)
     PRINT           reduce using rule 29 (expression_operation -> expression OR expression .)
     $end            reduce using rule 29 (expression_operation -> expression OR expression .)
     RPAREN          reduce using rule 29 (expression_operation -> expression OR expression .)
     THEN            reduce using rule 29 (expression_operation -> expression OR expression .)
     STOP            reduce using rule 29 (expression_operation -> expression OR expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
+    ELSE            reduce using rule 29 (expression_operation -> expression OR expression .)
+    ELSE_IF         reduce using rule 29 (expression_operation -> expression OR expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
 
   ! MULTIPLY        [ reduce using rule 29 (expression_operation -> expression OR expression .) ]
   ! DIVIDE          [ reduce using rule 29 (expression_operation -> expression OR expression .) ]
@@ -2489,11 +2503,11 @@ state 61
   ! GDEQ            [ reduce using rule 29 (expression_operation -> expression OR expression .) ]
   ! EQUALEQUAL      [ reduce using rule 29 (expression_operation -> expression OR expression .) ]
   ! NOTEQ           [ reduce using rule 29 (expression_operation -> expression OR expression .) ]
-  ! AND             [ shift and go to state 39 ]
-  ! OR              [ shift and go to state 40 ]
+  ! AND             [ shift and go to state 37 ]
+  ! OR              [ shift and go to state 38 ]
 
 
-state 62
+state 60
 
     (15) var_assign -> NAME EQUALS expression .
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2518,28 +2532,30 @@ state 62
     FALSE           reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     LPAREN          reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     WHILE           reduce using rule 15 (var_assign -> NAME EQUALS expression .)
+    IF              reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     READ            reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     NOT             reduce using rule 15 (var_assign -> NAME EQUALS expression .)
-    IF              reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     PRINT           reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     $end            reduce using rule 15 (var_assign -> NAME EQUALS expression .)
     STOP            reduce using rule 15 (var_assign -> NAME EQUALS expression .)
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+    ELSE            reduce using rule 15 (var_assign -> NAME EQUALS expression .)
+    ELSE_IF         reduce using rule 15 (var_assign -> NAME EQUALS expression .)
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
 
-state 63
+state 61
 
     (36) expression -> LPAREN expression RPAREN .
 
@@ -2564,163 +2580,154 @@ state 63
     FALSE           reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     LPAREN          reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     WHILE           reduce using rule 36 (expression -> LPAREN expression RPAREN .)
+    IF              reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     READ            reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     NOT             reduce using rule 36 (expression -> LPAREN expression RPAREN .)
-    IF              reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     PRINT           reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     $end            reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     RPAREN          reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     THEN            reduce using rule 36 (expression -> LPAREN expression RPAREN .)
     STOP            reduce using rule 36 (expression -> LPAREN expression RPAREN .)
+    ELSE            reduce using rule 36 (expression -> LPAREN expression RPAREN .)
+    ELSE_IF         reduce using rule 36 (expression -> LPAREN expression RPAREN .)
 
+
+state 62
+
+    (43) iterative -> WHILE expression THEN . language STOP
+    (3) language -> . language line
+    (4) language -> . line
+    (5) line -> . expression
+    (6) line -> . var_assign
+    (7) line -> . iterative
+    (8) line -> . conditional
+    (9) line -> . output
+    (10) line -> . input
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (15) var_assign -> . NAME EQUALS expression
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
+    (12) output -> . output_print
+    (11) input -> . READ LPAREN NAME RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+    (13) output_print -> . PRINT LPAREN expression RPAREN
+
+    NAME            shift and go to state 11
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    WHILE           shift and go to state 19
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
+
+    expression                     shift and go to state 5
+    language                       shift and go to state 66
+    line                           shift and go to state 4
+    var_assign                     shift and go to state 6
+    iterative                      shift and go to state 7
+    conditional                    shift and go to state 8
+    output                         shift and go to state 9
+    input                          shift and go to state 10
+    expression_operation           shift and go to state 12
+    output_print                   shift and go to state 21
+
+state 63
+
+    (37) conditional -> IF expression THEN . language else_if_blocks else_block STOP
+    (3) language -> . language line
+    (4) language -> . line
+    (5) line -> . expression
+    (6) line -> . var_assign
+    (7) line -> . iterative
+    (8) line -> . conditional
+    (9) line -> . output
+    (10) line -> . input
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (15) var_assign -> . NAME EQUALS expression
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
+    (12) output -> . output_print
+    (11) input -> . READ LPAREN NAME RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+    (13) output_print -> . PRINT LPAREN expression RPAREN
+
+    NAME            shift and go to state 11
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    WHILE           shift and go to state 19
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
+
+    expression                     shift and go to state 5
+    language                       shift and go to state 67
+    line                           shift and go to state 4
+    var_assign                     shift and go to state 6
+    iterative                      shift and go to state 7
+    conditional                    shift and go to state 8
+    output                         shift and go to state 9
+    input                          shift and go to state 10
+    expression_operation           shift and go to state 12
+    output_print                   shift and go to state 21
 
 state 64
 
-    (41) iterative -> WHILE expression THEN . language STOP
-    (3) language -> . language line
-    (4) language -> . line
-    (5) line -> . expression
-    (6) line -> . var_assign
-    (7) line -> . iterative
-    (8) line -> . conditional
-    (9) line -> . output
-    (10) line -> . input
-    (14) expression -> . NAME
-    (16) expression -> . expression_operation
-    (31) expression -> . INT
-    (32) expression -> . FLOAT
-    (33) expression -> . STRING
-    (34) expression -> . TRUE
-    (35) expression -> . FALSE
-    (36) expression -> . LPAREN expression RPAREN
-    (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
-    (12) output -> . output_print
-    (11) input -> . READ LPAREN NAME RPAREN
-    (17) expression_operation -> . expression MULTIPLY expression
-    (18) expression_operation -> . expression DIVIDE expression
-    (19) expression_operation -> . expression MODULO expression
-    (20) expression_operation -> . expression PLUS expression
-    (21) expression_operation -> . expression MINUS expression
-    (22) expression_operation -> . expression LD expression
-    (23) expression_operation -> . expression LDEQ expression
-    (24) expression_operation -> . expression GD expression
-    (25) expression_operation -> . expression GDEQ expression
-    (26) expression_operation -> . expression EQUALEQUAL expression
-    (27) expression_operation -> . expression NOTEQ expression
-    (28) expression_operation -> . expression AND expression
-    (29) expression_operation -> . expression OR expression
-    (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
-    (13) output_print -> . PRINT LPAREN expression RPAREN
-
-    NAME            shift and go to state 11
-    INT             shift and go to state 13
-    FLOAT           shift and go to state 14
-    STRING          shift and go to state 15
-    TRUE            shift and go to state 16
-    FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
-
-    expression                     shift and go to state 5
-    language                       shift and go to state 68
-    line                           shift and go to state 4
-    var_assign                     shift and go to state 6
-    iterative                      shift and go to state 7
-    conditional                    shift and go to state 8
-    output                         shift and go to state 9
-    input                          shift and go to state 10
-    expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
-
-state 65
-
     (11) input -> READ LPAREN NAME . RPAREN
 
-    RPAREN          shift and go to state 69
+    RPAREN          shift and go to state 68
 
 
-state 66
-
-    (40) conditional_if -> IF expression THEN . language STOP
-    (39) conditional_if_else -> IF expression THEN . language STOP ELSE THEN language STOP
-    (3) language -> . language line
-    (4) language -> . line
-    (5) line -> . expression
-    (6) line -> . var_assign
-    (7) line -> . iterative
-    (8) line -> . conditional
-    (9) line -> . output
-    (10) line -> . input
-    (14) expression -> . NAME
-    (16) expression -> . expression_operation
-    (31) expression -> . INT
-    (32) expression -> . FLOAT
-    (33) expression -> . STRING
-    (34) expression -> . TRUE
-    (35) expression -> . FALSE
-    (36) expression -> . LPAREN expression RPAREN
-    (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
-    (12) output -> . output_print
-    (11) input -> . READ LPAREN NAME RPAREN
-    (17) expression_operation -> . expression MULTIPLY expression
-    (18) expression_operation -> . expression DIVIDE expression
-    (19) expression_operation -> . expression MODULO expression
-    (20) expression_operation -> . expression PLUS expression
-    (21) expression_operation -> . expression MINUS expression
-    (22) expression_operation -> . expression LD expression
-    (23) expression_operation -> . expression LDEQ expression
-    (24) expression_operation -> . expression GD expression
-    (25) expression_operation -> . expression GDEQ expression
-    (26) expression_operation -> . expression EQUALEQUAL expression
-    (27) expression_operation -> . expression NOTEQ expression
-    (28) expression_operation -> . expression AND expression
-    (29) expression_operation -> . expression OR expression
-    (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
-    (13) output_print -> . PRINT LPAREN expression RPAREN
-
-    NAME            shift and go to state 11
-    INT             shift and go to state 13
-    FLOAT           shift and go to state 14
-    STRING          shift and go to state 15
-    TRUE            shift and go to state 16
-    FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
-
-    expression                     shift and go to state 5
-    language                       shift and go to state 70
-    line                           shift and go to state 4
-    var_assign                     shift and go to state 6
-    iterative                      shift and go to state 7
-    conditional                    shift and go to state 8
-    output                         shift and go to state 9
-    input                          shift and go to state 10
-    expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
-
-state 67
+state 65
 
     (13) output_print -> PRINT LPAREN expression . RPAREN
     (17) expression_operation -> expression . MULTIPLY expression
@@ -2737,25 +2744,25 @@ state 67
     (28) expression_operation -> expression . AND expression
     (29) expression_operation -> expression . OR expression
 
-    RPAREN          shift and go to state 71
-    MULTIPLY        shift and go to state 28
-    DIVIDE          shift and go to state 29
-    MODULO          shift and go to state 30
-    PLUS            shift and go to state 31
-    MINUS           shift and go to state 32
-    LD              shift and go to state 33
-    LDEQ            shift and go to state 34
-    GD              shift and go to state 35
-    GDEQ            shift and go to state 36
-    EQUALEQUAL      shift and go to state 37
-    NOTEQ           shift and go to state 38
-    AND             shift and go to state 39
-    OR              shift and go to state 40
+    RPAREN          shift and go to state 69
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
 
-state 68
+state 66
 
-    (41) iterative -> WHILE expression THEN language . STOP
+    (43) iterative -> WHILE expression THEN language . STOP
     (3) language -> language . line
     (5) line -> . expression
     (6) line -> . var_assign
@@ -2772,9 +2779,8 @@ state 68
     (35) expression -> . FALSE
     (36) expression -> . LPAREN expression RPAREN
     (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
     (12) output -> . output_print
     (11) input -> . READ LPAREN NAME RPAREN
     (17) expression_operation -> . expression MULTIPLY expression
@@ -2791,11 +2797,9 @@ state 68
     (28) expression_operation -> . expression AND expression
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
     (13) output_print -> . PRINT LPAREN expression RPAREN
 
-    STOP            shift and go to state 72
+    STOP            shift and go to state 70
     NAME            shift and go to state 11
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
@@ -2804,24 +2808,92 @@ state 68
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
     WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
 
     expression                     shift and go to state 5
-    line                           shift and go to state 27
+    line                           shift and go to state 25
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
+    output_print                   shift and go to state 21
 
-state 69
+state 67
+
+    (37) conditional -> IF expression THEN language . else_if_blocks else_block STOP
+    (3) language -> language . line
+    (38) else_if_blocks -> . empty
+    (39) else_if_blocks -> . else_if_blocks else_if_block
+    (5) line -> . expression
+    (6) line -> . var_assign
+    (7) line -> . iterative
+    (8) line -> . conditional
+    (9) line -> . output
+    (10) line -> . input
+    (44) empty -> .
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (15) var_assign -> . NAME EQUALS expression
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
+    (12) output -> . output_print
+    (11) input -> . READ LPAREN NAME RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+    (13) output_print -> . PRINT LPAREN expression RPAREN
+
+    ELSE            reduce using rule 44 (empty -> .)
+    ELSE_IF         reduce using rule 44 (empty -> .)
+    STOP            reduce using rule 44 (empty -> .)
+    NAME            shift and go to state 11
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    WHILE           shift and go to state 19
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
+
+    expression                     shift and go to state 5
+    else_if_blocks                 shift and go to state 71
+    line                           shift and go to state 25
+    empty                          shift and go to state 72
+    var_assign                     shift and go to state 6
+    iterative                      shift and go to state 7
+    conditional                    shift and go to state 8
+    output                         shift and go to state 9
+    input                          shift and go to state 10
+    expression_operation           shift and go to state 12
+    output_print                   shift and go to state 21
+
+state 68
 
     (11) input -> READ LPAREN NAME RPAREN .
 
@@ -2833,84 +2905,17 @@ state 69
     FALSE           reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     LPAREN          reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     WHILE           reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
+    IF              reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     READ            reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     NOT             reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
-    IF              reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     PRINT           reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     $end            reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
     STOP            reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
+    ELSE            reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
+    ELSE_IF         reduce using rule 11 (input -> READ LPAREN NAME RPAREN .)
 
 
-state 70
-
-    (40) conditional_if -> IF expression THEN language . STOP
-    (39) conditional_if_else -> IF expression THEN language . STOP ELSE THEN language STOP
-    (3) language -> language . line
-    (5) line -> . expression
-    (6) line -> . var_assign
-    (7) line -> . iterative
-    (8) line -> . conditional
-    (9) line -> . output
-    (10) line -> . input
-    (14) expression -> . NAME
-    (16) expression -> . expression_operation
-    (31) expression -> . INT
-    (32) expression -> . FLOAT
-    (33) expression -> . STRING
-    (34) expression -> . TRUE
-    (35) expression -> . FALSE
-    (36) expression -> . LPAREN expression RPAREN
-    (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
-    (12) output -> . output_print
-    (11) input -> . READ LPAREN NAME RPAREN
-    (17) expression_operation -> . expression MULTIPLY expression
-    (18) expression_operation -> . expression DIVIDE expression
-    (19) expression_operation -> . expression MODULO expression
-    (20) expression_operation -> . expression PLUS expression
-    (21) expression_operation -> . expression MINUS expression
-    (22) expression_operation -> . expression LD expression
-    (23) expression_operation -> . expression LDEQ expression
-    (24) expression_operation -> . expression GD expression
-    (25) expression_operation -> . expression GDEQ expression
-    (26) expression_operation -> . expression EQUALEQUAL expression
-    (27) expression_operation -> . expression NOTEQ expression
-    (28) expression_operation -> . expression AND expression
-    (29) expression_operation -> . expression OR expression
-    (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
-    (13) output_print -> . PRINT LPAREN expression RPAREN
-
-    STOP            shift and go to state 73
-    NAME            shift and go to state 11
-    INT             shift and go to state 13
-    FLOAT           shift and go to state 14
-    STRING          shift and go to state 15
-    TRUE            shift and go to state 16
-    FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
-
-    expression                     shift and go to state 5
-    line                           shift and go to state 27
-    var_assign                     shift and go to state 6
-    iterative                      shift and go to state 7
-    conditional                    shift and go to state 8
-    output                         shift and go to state 9
-    input                          shift and go to state 10
-    expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
-
-state 71
+state 69
 
     (13) output_print -> PRINT LPAREN expression RPAREN .
 
@@ -2922,66 +2927,83 @@ state 71
     FALSE           reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     LPAREN          reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     WHILE           reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
+    IF              reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     READ            reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     NOT             reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
-    IF              reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     PRINT           reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     $end            reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
     STOP            reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
+    ELSE            reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
+    ELSE_IF         reduce using rule 13 (output_print -> PRINT LPAREN expression RPAREN .)
 
+
+state 70
+
+    (43) iterative -> WHILE expression THEN language STOP .
+
+    NAME            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    INT             reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    FLOAT           reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    STRING          reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    TRUE            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    FALSE           reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    LPAREN          reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    WHILE           reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    IF              reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    READ            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    NOT             reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    PRINT           reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    $end            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    STOP            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    ELSE            reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+    ELSE_IF         reduce using rule 43 (iterative -> WHILE expression THEN language STOP .)
+
+
+state 71
+
+    (37) conditional -> IF expression THEN language else_if_blocks . else_block STOP
+    (39) else_if_blocks -> else_if_blocks . else_if_block
+    (41) else_block -> . ELSE language
+    (42) else_block -> . empty
+    (40) else_if_block -> . ELSE_IF expression THEN language
+    (44) empty -> .
+
+    ELSE            shift and go to state 75
+    ELSE_IF         shift and go to state 77
+    STOP            reduce using rule 44 (empty -> .)
+
+    else_block                     shift and go to state 73
+    else_if_block                  shift and go to state 74
+    empty                          shift and go to state 76
 
 state 72
 
-    (41) iterative -> WHILE expression THEN language STOP .
+    (38) else_if_blocks -> empty .
 
-    NAME            reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    INT             reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    FLOAT           reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    STRING          reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    TRUE            reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    FALSE           reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    LPAREN          reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    WHILE           reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    READ            reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    NOT             reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    IF              reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    PRINT           reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    $end            reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
-    STOP            reduce using rule 41 (iterative -> WHILE expression THEN language STOP .)
+    ELSE            reduce using rule 38 (else_if_blocks -> empty .)
+    ELSE_IF         reduce using rule 38 (else_if_blocks -> empty .)
+    STOP            reduce using rule 38 (else_if_blocks -> empty .)
 
 
 state 73
 
-    (40) conditional_if -> IF expression THEN language STOP .
-    (39) conditional_if_else -> IF expression THEN language STOP . ELSE THEN language STOP
+    (37) conditional -> IF expression THEN language else_if_blocks else_block . STOP
 
-    NAME            reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    INT             reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    FLOAT           reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    STRING          reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    TRUE            reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    FALSE           reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    LPAREN          reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    WHILE           reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    READ            reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    NOT             reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    IF              reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    PRINT           reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    $end            reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    STOP            reduce using rule 40 (conditional_if -> IF expression THEN language STOP .)
-    ELSE            shift and go to state 74
+    STOP            shift and go to state 78
 
 
 state 74
 
-    (39) conditional_if_else -> IF expression THEN language STOP ELSE . THEN language STOP
+    (39) else_if_blocks -> else_if_blocks else_if_block .
 
-    THEN            shift and go to state 75
+    ELSE            reduce using rule 39 (else_if_blocks -> else_if_blocks else_if_block .)
+    ELSE_IF         reduce using rule 39 (else_if_blocks -> else_if_blocks else_if_block .)
+    STOP            reduce using rule 39 (else_if_blocks -> else_if_blocks else_if_block .)
 
 
 state 75
 
-    (39) conditional_if_else -> IF expression THEN language STOP ELSE THEN . language STOP
+    (41) else_block -> ELSE . language
     (3) language -> . language line
     (4) language -> . line
     (5) line -> . expression
@@ -2999,9 +3021,8 @@ state 75
     (35) expression -> . FALSE
     (36) expression -> . LPAREN expression RPAREN
     (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
     (12) output -> . output_print
     (11) input -> . READ LPAREN NAME RPAREN
     (17) expression_operation -> . expression MULTIPLY expression
@@ -3018,8 +3039,6 @@ state 75
     (28) expression_operation -> . expression AND expression
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
     (13) output_print -> . PRINT LPAREN expression RPAREN
 
     NAME            shift and go to state 11
@@ -3030,27 +3049,92 @@ state 75
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
     WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
 
-    expression                     shift and go to state 5
-    language                       shift and go to state 76
+    language                       shift and go to state 79
     line                           shift and go to state 4
+    expression                     shift and go to state 5
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
+    output_print                   shift and go to state 21
 
 state 76
 
-    (39) conditional_if_else -> IF expression THEN language STOP ELSE THEN language . STOP
+    (42) else_block -> empty .
+
+    STOP            reduce using rule 42 (else_block -> empty .)
+
+
+state 77
+
+    (40) else_if_block -> ELSE_IF . expression THEN language
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+
+    NAME            shift and go to state 41
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    NOT             shift and go to state 23
+
+    expression                     shift and go to state 80
+    expression_operation           shift and go to state 12
+
+state 78
+
+    (37) conditional -> IF expression THEN language else_if_blocks else_block STOP .
+
+    NAME            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    INT             reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    FLOAT           reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    STRING          reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    TRUE            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    FALSE           reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    LPAREN          reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    WHILE           reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    IF              reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    READ            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    NOT             reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    PRINT           reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    $end            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    STOP            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    ELSE            reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+    ELSE_IF         reduce using rule 37 (conditional -> IF expression THEN language else_if_blocks else_block STOP .)
+
+
+state 79
+
+    (41) else_block -> ELSE language .
     (3) language -> language . line
     (5) line -> . expression
     (6) line -> . var_assign
@@ -3067,9 +3151,8 @@ state 76
     (35) expression -> . FALSE
     (36) expression -> . LPAREN expression RPAREN
     (15) var_assign -> . NAME EQUALS expression
-    (41) iterative -> . WHILE expression THEN language STOP
-    (37) conditional -> . conditional_if
-    (38) conditional -> . conditional_if_else
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
     (12) output -> . output_print
     (11) input -> . READ LPAREN NAME RPAREN
     (17) expression_operation -> . expression MULTIPLY expression
@@ -3086,11 +3169,9 @@ state 76
     (28) expression_operation -> . expression AND expression
     (29) expression_operation -> . expression OR expression
     (30) expression_operation -> . NOT expression
-    (40) conditional_if -> . IF expression THEN language STOP
-    (39) conditional_if_else -> . IF expression THEN language STOP ELSE THEN language STOP
     (13) output_print -> . PRINT LPAREN expression RPAREN
 
-    STOP            shift and go to state 77
+    STOP            reduce using rule 41 (else_block -> ELSE language .)
     NAME            shift and go to state 11
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
@@ -3099,39 +3180,179 @@ state 76
     FALSE           shift and go to state 17
     LPAREN          shift and go to state 18
     WHILE           shift and go to state 19
-    READ            shift and go to state 23
-    NOT             shift and go to state 24
-    IF              shift and go to state 25
-    PRINT           shift and go to state 26
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
 
+    line                           shift and go to state 25
     expression                     shift and go to state 5
-    line                           shift and go to state 27
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    conditional_if                 shift and go to state 20
-    conditional_if_else            shift and go to state 21
-    output_print                   shift and go to state 22
+    output_print                   shift and go to state 21
 
-state 77
+state 80
 
-    (39) conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .
+    (40) else_if_block -> ELSE_IF expression . THEN language
+    (17) expression_operation -> expression . MULTIPLY expression
+    (18) expression_operation -> expression . DIVIDE expression
+    (19) expression_operation -> expression . MODULO expression
+    (20) expression_operation -> expression . PLUS expression
+    (21) expression_operation -> expression . MINUS expression
+    (22) expression_operation -> expression . LD expression
+    (23) expression_operation -> expression . LDEQ expression
+    (24) expression_operation -> expression . GD expression
+    (25) expression_operation -> expression . GDEQ expression
+    (26) expression_operation -> expression . EQUALEQUAL expression
+    (27) expression_operation -> expression . NOTEQ expression
+    (28) expression_operation -> expression . AND expression
+    (29) expression_operation -> expression . OR expression
 
-    NAME            reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    INT             reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    FLOAT           reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    STRING          reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    TRUE            reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    FALSE           reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    LPAREN          reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    WHILE           reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    READ            reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    NOT             reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    IF              reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    PRINT           reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    $end            reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
-    STOP            reduce using rule 39 (conditional_if_else -> IF expression THEN language STOP ELSE THEN language STOP .)
+    THEN            shift and go to state 81
+    MULTIPLY        shift and go to state 26
+    DIVIDE          shift and go to state 27
+    MODULO          shift and go to state 28
+    PLUS            shift and go to state 29
+    MINUS           shift and go to state 30
+    LD              shift and go to state 31
+    LDEQ            shift and go to state 32
+    GD              shift and go to state 33
+    GDEQ            shift and go to state 34
+    EQUALEQUAL      shift and go to state 35
+    NOTEQ           shift and go to state 36
+    AND             shift and go to state 37
+    OR              shift and go to state 38
 
+
+state 81
+
+    (40) else_if_block -> ELSE_IF expression THEN . language
+    (3) language -> . language line
+    (4) language -> . line
+    (5) line -> . expression
+    (6) line -> . var_assign
+    (7) line -> . iterative
+    (8) line -> . conditional
+    (9) line -> . output
+    (10) line -> . input
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (15) var_assign -> . NAME EQUALS expression
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
+    (12) output -> . output_print
+    (11) input -> . READ LPAREN NAME RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+    (13) output_print -> . PRINT LPAREN expression RPAREN
+
+    NAME            shift and go to state 11
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    WHILE           shift and go to state 19
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
+
+    expression                     shift and go to state 5
+    language                       shift and go to state 82
+    line                           shift and go to state 4
+    var_assign                     shift and go to state 6
+    iterative                      shift and go to state 7
+    conditional                    shift and go to state 8
+    output                         shift and go to state 9
+    input                          shift and go to state 10
+    expression_operation           shift and go to state 12
+    output_print                   shift and go to state 21
+
+state 82
+
+    (40) else_if_block -> ELSE_IF expression THEN language .
+    (3) language -> language . line
+    (5) line -> . expression
+    (6) line -> . var_assign
+    (7) line -> . iterative
+    (8) line -> . conditional
+    (9) line -> . output
+    (10) line -> . input
+    (14) expression -> . NAME
+    (16) expression -> . expression_operation
+    (31) expression -> . INT
+    (32) expression -> . FLOAT
+    (33) expression -> . STRING
+    (34) expression -> . TRUE
+    (35) expression -> . FALSE
+    (36) expression -> . LPAREN expression RPAREN
+    (15) var_assign -> . NAME EQUALS expression
+    (43) iterative -> . WHILE expression THEN language STOP
+    (37) conditional -> . IF expression THEN language else_if_blocks else_block STOP
+    (12) output -> . output_print
+    (11) input -> . READ LPAREN NAME RPAREN
+    (17) expression_operation -> . expression MULTIPLY expression
+    (18) expression_operation -> . expression DIVIDE expression
+    (19) expression_operation -> . expression MODULO expression
+    (20) expression_operation -> . expression PLUS expression
+    (21) expression_operation -> . expression MINUS expression
+    (22) expression_operation -> . expression LD expression
+    (23) expression_operation -> . expression LDEQ expression
+    (24) expression_operation -> . expression GD expression
+    (25) expression_operation -> . expression GDEQ expression
+    (26) expression_operation -> . expression EQUALEQUAL expression
+    (27) expression_operation -> . expression NOTEQ expression
+    (28) expression_operation -> . expression AND expression
+    (29) expression_operation -> . expression OR expression
+    (30) expression_operation -> . NOT expression
+    (13) output_print -> . PRINT LPAREN expression RPAREN
+
+    ELSE            reduce using rule 40 (else_if_block -> ELSE_IF expression THEN language .)
+    ELSE_IF         reduce using rule 40 (else_if_block -> ELSE_IF expression THEN language .)
+    STOP            reduce using rule 40 (else_if_block -> ELSE_IF expression THEN language .)
+    NAME            shift and go to state 11
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LPAREN          shift and go to state 18
+    WHILE           shift and go to state 19
+    IF              shift and go to state 20
+    READ            shift and go to state 22
+    NOT             shift and go to state 23
+    PRINT           shift and go to state 24
+
+    expression                     shift and go to state 5
+    line                           shift and go to state 25
+    var_assign                     shift and go to state 6
+    iterative                      shift and go to state 7
+    conditional                    shift and go to state 8
+    output                         shift and go to state 9
+    input                          shift and go to state 10
+    expression_operation           shift and go to state 12
+    output_print                   shift and go to state 21
