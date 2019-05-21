@@ -2,7 +2,6 @@ import ply.lex as lex
 import ply.yacc as yacc
 from sys import *
 
-fo = open("parsed.owo", "w")
 
 reserved = {
     
@@ -127,8 +126,6 @@ def p_start(p):
         print()
         print()
         print(p[0])
-        fo.write(p[0])
-        fo.close()
 
 
 #grammar for multiple lines
