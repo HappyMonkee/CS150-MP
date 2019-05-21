@@ -263,15 +263,34 @@ def p_expression_data_type(p):
     p[0] = p[1]
     print("EXPRESSION TO DATATYPE:", p[0])
 
-def p_expression_array(p):
+def p_expression_int_array(p):
     '''
     expression : LBRACE int_type_array RBRACE
-               | LBRACE float_type_array RBRACE
-               | LBRACE string_type_array RBRACE
-               | LBRACE bool_type_array RBRACE
     '''
-    p[0] = ('ARRAY', p[2])
+    p[0] = ('ARRAY', 'INT', p[2])
     print("EXPRESSION TO ARRAY:", p[0])
+
+def p_expression_float_array(p):
+    '''
+    expression : LBRACE float_type_array RBRACE
+    '''
+    p[0] = ('ARRAY','FLOAT', p[2])
+    print("EXPRESSION TO ARRAY:", p[0])
+
+def p_expression_string_array(p):
+    '''
+    expression : LBRACE string_type_array RBRACE
+    '''
+    p[0] = ('ARRAY','STRING', p[2])
+    print("EXPRESSION TO ARRAY:", p[0])
+
+def p_expression_bool_array(p):
+    '''
+    expression : LBRACE bool_type_array RBRACE
+    '''
+    p[0] = ('ARRAY','BOOL', p[2])
+    print("EXPRESSION TO ARRAY:", p[0])
+
 
 def p_int_type_array(p):
     '''
@@ -280,9 +299,9 @@ def p_int_type_array(p):
     '''
     if len(p) == 3:
         if p[2] == None:
-            p[0] = ('INT', p[1])
+            p[0] = (p[1])
         else:
-            p[0] = ('INT', p[1], p[2])
+            p[0] = (p[1], p[2])
     else:
         p[0] = None
     print("ARRAY IS INT-TYPED:", p[0])
@@ -294,9 +313,9 @@ def p_float_type_array(p):
     '''
     if len(p) == 3:
         if p[2] == None:
-            p[0] = ('FLOAT', p[1])
+            p[0] = (p[1])
         else:
-            p[0] = ('FLOAT', p[1], p[2])
+            p[0] = (p[1], p[2])
     else:
         p[0] = None
     print("ARRAY IS FLOAT-TYPED:", p[0])
@@ -308,9 +327,9 @@ def p_string_type_array(p):
     '''
     if len(p) == 3:
         if p[2] == None:
-            p[0] = ('STRING', p[1])
+            p[0] = (p[1])
         else:
-            p[0] = ('STRING', p[1], p[2])
+            p[0] = (p[1], p[2])
     else:
         p[0] = None
     print("ARRAY IS STRING-TYPED:", p[0])
@@ -323,12 +342,12 @@ def p_bool_type_array(p):
     '''
     if len(p) == 3:
         if p[2] == None:
-            p[0] = ('BOOL', p[1])
+            p[0] = (p[1])
         else:
-            p[0] = ('BOOL', p[1], p[2])
+            p[0] = (p[1], p[2])
     else:
         p[0] = None
-    print("ARRAY IS BOOL-TYPED:", p[0])
+    print("ARRAY IS STRING-TYPED:", p[0])
 
 #grammar for parenthesis
 
