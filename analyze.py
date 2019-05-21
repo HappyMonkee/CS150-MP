@@ -9,7 +9,7 @@ tokens = [
     'LD', 'LDEQ', 'GD', 'GDEQ', 'NOTEQ', 'EQUAL', 'EQUALEQUAL',
     'AND', 'OR', 'NOT',
     'LPAREN', 'RPAREN',
-    'IF', 'ELSE', 'WHILE',
+    'IF', 'ELSE', 'THEN','WHILE', 'STOP', 
     'PRINT', 'READ'      
 ]
 
@@ -34,7 +34,9 @@ reserved = {
 
     'IF'        : 'IF',
     'ELSE'      : 'ELSE',
+    'THEN'      : 'THEN',
     'WHILE'     : 'WHILE',
+    'STOP'      : 'STOP',
 
     'PRINT'     : 'PRINT',
     'READ'      : 'READ'
@@ -98,90 +100,211 @@ precedence = (
 
 )
 
-def p_start(p):         #start of grammar
+#start of grammar
+
+def p_start(p):
     '''
-    start   : branch
-            | empty
+    start : language
+          | empty
     '''
     p[0] = p[1]
-    #run(p[0])           #comment out first
+    run(p[0])
 
-def p_branch(p):        #grammar for multiple lines
+#grammar for multiple lines
+
+def p_language(p):
     '''
-    branch  : branch choice
-            | choice
-
+    language : language line
+             | line
     '''
     if len(p) == 3:
         p[0] = ('MULTILINES', p[1], p[2])
     else:
         p[0] = p[1]
 
-def p_choice(p):        #grammar for each line of code
+#grammar for each line of code
+
+def p_line(p):
     '''
-    choice : var_assign
-           | expression
-           | print_stmt
-           | scan_stmt
-           | while_stmt
-           | for_stmt
-           | if_stmt
+    line : expression
+         | var_assign
+         | iterative
+         | conditional
+         | output
+         | input
     '''
     p[0] = p[1]
 
+#grammar for reading
 
-#-------------------------------------------------#
-
-def p_calc(p):
+def p_input(p):
     '''
-    calc    : expression
-            | var_assign
-            | empty
-
+    input : READ LPAREN NAME RPAREN
     '''
+    p[0] = ('READ',p[3])
 
-    res = run(p[1])
-    if res != None:
-        print(res)
-    # print(run(p[1]))
+#grammar for printing
+
+def p_output(p):
+    '''
+    output : output_print
+    '''
+    p[0] = p[1]
+
+#printing without newline
+
+def p_output_print(p):
+    '''
+    output_print : PRINT LPAREN expression RPAREN
+    '''
+    p[0] = ('PRINT', p[3])
+
+#grammar for assigning values
+
+def p_expression_var_assign(p):
+    '''
+    expression : NAME
+    '''
+    p[0] = ('var', p[1])
+
+#grammar for equating values
 
 def p_var_assign(p):
     '''
-
-    var_assign    :   NAME EQUALS expression
+    var_assign : NAME EQUAL expression
     '''
+    p[0] = ('EQUAL', p[1], p[3])
 
-    p[0] = ('=', p[1], p[3])
+#grammar for deciding operators
 
 def p_expression(p):
     '''
-    expression  :   expression MULTIPLY expression
-                |   expression DIVIDE expression
-                |   expression PLUS expression
-                |   expression MINUS expression
-                |   expression MODULO expression
-    '''
-
-    p[0] = (p[2], p[1], p[3])
-
-def p_expression_int_float(p):
-    '''
-    expression  :   INT
-                |   FLOAT
+    expression : expression_operation
     '''
     p[0] = p[1]
 
-def p_expression_bool(p):
-    '''
-    expression  :   BOOL
-    '''
-    p[0] = ('bool', p[1])
+#grammar for infix operators
 
-def p_expression_var(p):
+def p_expression_operation(p):
     '''
-    expression  :   NAME
+    expression_operation : expression MULTIPLY expression
+                         | expression DIVIDE expression
+                         | expression MODULO expression
+                         | expression PLUS expression
+                         | expression MINUS expression
+                         | expression LD expression
+                         | expression LDEQ expression
+                         | expression GD expression
+                         | expression GDEQ expression
+                         | expression EQUALEQUAL expression
+                         | expression AND expression
+                         | expression OR expression
     '''
-    p[0] = ('var', p[1])
+    p[0] = (p[2],p[1],p[3])
+
+#grammar for data types
+
+def p_expression_data_type(p):
+    '''
+    expression : INT
+               | FLOAT
+               | STRING
+    '''
+    p[0] = p[1]
+
+#grammar for parenthesis
+
+def p_expression_parenthesis(p):
+    '''
+    expression : LPAREN expression RPAREN
+    '''
+    p[0] = p[2]
+
+#grammar for deciding between if or if else
+
+def p_conditional(p):
+    '''
+    conditional : conditional_if
+                | conditional_if_else
+    '''
+    p[0] = p[1]
+
+#grammar for if else statement
+
+def p_conditional_if_else(p):
+    '''
+    conditional_if_else : IF expression THEN language STOP ELSE THEN language STOP
+    '''
+    p[0] = ('IFELSE',p[2],p[4],p[8])
+
+#grammar for if statement
+
+def p_conditional_if(p):
+    '''
+    conditional_if : IF expression THEN language STOP
+    '''
+    p[0] = ('IF',p[2],p[4])
+
+#grammar for while
+
+def p_iterative(p):
+    '''
+    iterative : WHILE expression THEN language STOP
+    '''
+    p[0] = ('WHILE', p[2],p[4])
+
+#-------------------------------------------------#
+
+# def p_calc(p):
+#     '''
+#     calc    : expression
+#             | var_assign
+#             | empty
+
+#     '''
+
+#     res = run(p[1])
+#     if res != None:
+#         print(res)
+#     # print(run(p[1]))
+
+# def p_var_assign(p):
+#     '''
+
+#     var_assign    :   NAME EQUALS expression
+#     '''
+
+#     p[0] = ('=', p[1], p[3])
+
+# def p_expression(p):
+#     '''
+#     expression  :   expression MULTIPLY expression
+#                 |   expression DIVIDE expression
+#                 |   expression PLUS expression
+#                 |   expression MINUS expression
+#                 |   expression MODULO expression
+#     '''
+
+#     p[0] = (p[2], p[1], p[3])
+
+# def p_expression_int_float(p):
+#     '''
+#     expression  :   INT
+#                 |   FLOAT
+#     '''
+#     p[0] = p[1]
+
+# def p_expression_bool(p):
+#     '''
+#     expression  :   BOOL
+#     '''
+#     p[0] = ('bool', p[1])
+
+# def p_expression_var(p):
+#     '''
+#     expression  :   NAME
+#     '''
+#     p[0] = ('var', p[1])
 
 
 def p_error(p):
@@ -201,50 +324,103 @@ def run(p):
     global env
 
     if type(p) == tuple:
-
-        ### boolean?? not sure where to add yet ###
-        if p[0] == 'bool':
-            print("testing bool stuff")
-            return
-
-        ### Check if Variables Exists ###
-        if p[0] == 'var':
-            if p[1] not in env:
-                print('Undeclared variable found! - ', p[1])               
-                return
-            else:
-                return env[p[1]]
-
-        ### Assign Value to Variable ###
-        if p[0] == '=':
+        if p[0] == 'PLUS':
+            return run(p[1]) + run(p[2])
+        elif p[0] == 'MINUS':
+            return run(p[1]) - run(p[2])
+        elif p[0] == 'MULTIPLY':
+            return run(p[1]) * run(p[2])
+        elif p[0] == 'DIVIDE':
+            return run(p[1]) / run(p[2])
+        elif p[0] == 'EQUAL':
             env[p[1]] = run(p[2])
-            return
-
-
-        a = run(p[1])
-        b = run(p[2])
-
-        if type(a) != int or type(b) != int:
-            return
-
-        ### Evaluate Expressions ###
-        if p[0] == '+':
-            return a + b
-        if p[0] == '-':
-            return a - b
-        if p[0] == '*':
-            return a * b
-        if p[0] == '/':
-            return a / b
-        if p[0] == '%':
-            return a % b
+        elif p[0] == 'var':
+            if p[1] not in env:
+                 print('Undeclared variable found! - ', p[1])               
+                 return
+            else:
+                 return env[p[1]]
+            return env[p[1]]
+        elif p[0] == 'MODULO':
+            return run(p[1]) % run(p[2])
+        elif p[0] == 'LD':
+            return run(p[1]) < run(p[2])
+        elif p[0] == 'LDEQ':
+            return run(p[1]) <= run(p[2])
+        elif p[0] == 'GD':
+            return run(p[1]) > run(p[2])
+        elif p[0] == 'GDEQ':
+            return run(p[1]) >= run(p[2])
+        elif p[0] == 'EQUALEQUAL':
+            return run(p[1]) == run(p[2])
+        elif p[0] == 'AND':
+            return run(p[1]) and run(p[2])
+        elif p[0] == 'OR':
+            return run(p[1]) or run(p[2])
+        elif p[0] == 'NOT':
+            return not run(p[1])
+        elif p[0] == 'MULTILINES':
+            run(p[1])
+            run(p[2])
+        elif p[0] == 'IF':
+            if run(p[1]) != 0:
+                run(p[2])
+        elif p[0] == 'IFELSE':
+            if run(p[1]) != 0:
+                run(p[2])
+            else:
+                run(p[3])
+        elif p[0] == 'WHILE':
+            while run(p[1]) != 0:
+                run(p[2])
+        elif p[0] == 'PRINT':
+            print(run(p[1]))
+        elif p[0] == 'READ':
+            env[p[1]] = input()
     else:
         return p
 
+    #     ### boolean?? not sure where to add yet ###
+    #     if p[0] == 'bool':
+    #         print("testing bool stuff")
+    #         return
+
+    #     ### Check if env Exists ###
+    #     if p[0] == 'var':
+    #         if p[1] not in env:
+    #             print('Undeclared variable found! - ', p[1])               
+    #             return
+    #         else:
+    #             return env[p[1]]
+
+    #     ### Assign Value to Variable ###
+    #     if p[0] == '=':
+    #         env[p[1]] = run(p[2])
+    #         return
 
 
+    #     a = run(p[1])
+    #     b = run(p[2])
 
-while True:
+    #     if type(a) != int or type(b) != int:
+    #         return
+
+    #     ### Evaluate Expressions ###
+    #     if p[0] == '+':
+    #         return a + b
+    #     if p[0] == '-':
+    #         return a - b
+    #     if p[0] == '*':
+    #         return a * b
+    #     if p[0] == '/':
+    #         return a / b
+    #     if p[0] == '%':
+    #         return a % b
+    # else:
+    #     return p
+
+
+while True:             #we should be able to read from files ye? - hans
     try:
         s = input(">>> ")
         if(s == "UMU"):              # added exit code via cmd
