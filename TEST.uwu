@@ -1,1 +1,10 @@
-PRINT("HELLO")
+while (true) {
+
+    while (true) {
+        if (true) {
+            a = 10 + 5
+            print(a)
+        }
+    }
+    print(a)
+}

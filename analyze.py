@@ -16,10 +16,10 @@ reserved = {
     'else'      : 'ELSE',
     'then'      : 'THEN',
     'while'     : 'WHILE',
-    'stop'      : 'STOP',
+    # 'stop'      : 'STOP',
 
-    'PRINT'     : 'PRINT',
-    'READ'      : 'READ'
+    'print'     : 'PRINT',
+    'read'      : 'READ'
 }
 
 tokens = [
@@ -29,16 +29,20 @@ tokens = [
     'LD', 'LDEQ', 'GD', 'GDEQ', 'NOTEQ', 'EQUALEQUAL',
     'AND', 'OR', 'NOT',
     'LPAREN', 'RPAREN',
-    'IF', 'ELSE_IF', 'ELSE', 'THEN','WHILE', 'STOP', 
-    'PRINT', 'READ'      
+    'IF', 'ELSE_IF', 'ELSE', 'WHILE', 
+    'START', 'STOP', 
+    'PRINT', 'READ',
+    'NEWLINE'      
 ]
 
 
 
 t_EQUALEQUAL    =   r'\=\='
 t_LDEQ          =   r'\<\='
-t_NOTEQ          =   r'\!\='
+t_NOTEQ         =   r'\!\='
 
+t_START         =   r'\{'
+t_STOP          =   r'\}'
 t_LPAREN        =   r'\('
 t_RPAREN        =   r'\)'
 t_PLUS          =   r'\+'
@@ -52,12 +56,14 @@ t_GD            =   r'\>'
 
 t_ignore = r' '
 
-def t_newline(t):
+def t_NEWLINE(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+    # print(len(t.value))
+    return t;
 
 def t_COMMENT(t):
-    r'\#.*'
+    r'\#.*\n+'
     pass        #no return value, token discarded
 
 def t_FLOAT(t):
@@ -114,6 +120,8 @@ def p_start(p):
     print("START")
     p[0] = p[1]
     if p[0] != None:
+        print()
+        print()
         print(p[0])
 
 
@@ -121,14 +129,24 @@ def p_start(p):
 
 def p_language(p):
     '''
-    language : language line
+    language : language NEWLINE line
              | line
     '''
-    print("LANGUAGE")
-    if len(p) == 3:
-        p[0] = ('MULTILINES', p[1], p[2])
+    if len(p) == 4:
+
+        if p[3] != None:
+            p[0] = ('MULTILINES', p[1], p[3])
+            print("LANGUAGE MULTILINES:",p[0])
+        else:
+            p[0] = ('LANGUAGE', p[1])
+            print("LANGUAGE:", p[0])
+    # elif len(p) == 3:
+    #     p[0] = ('MULTILINES', p[1])
+    #     print("LANGUAGE MULTILINES:",p[0])
+
     else:
         p[0] = p[1]
+        print("LANGUAGE:",p[0])
 
 #grammar for each line of code
 
@@ -140,9 +158,10 @@ def p_line(p):
          | conditional
          | output
          | input
+         | empty
     '''
-    print("LINE")
     p[0] = p[1]
+    print("LINE:",p[0])
 
 #grammar for reading
 
@@ -151,8 +170,8 @@ def p_input(p):
     input : READ LPAREN NAME RPAREN
     '''
 
-    print("INPUT")
     p[0] = ('READ',p[3])
+    print("INPUT:",p[0])
 
 #grammar for printing
 
@@ -161,8 +180,8 @@ def p_output(p):
     output : output_print
     '''
 
-    print("OUTPUT")
     p[0] = p[1]
+    print("OUTPUT:",p[0])
 
 #printing without newline
 
@@ -171,8 +190,8 @@ def p_output_print(p):
     output_print : PRINT LPAREN expression RPAREN
     '''
 
-    print("OUTPUT PRINT")
     p[0] = ('PRINT', p[3])
+    print("OUTPUT PRINT:",p[0])
 
 #grammar for assigning values
 
@@ -180,8 +199,8 @@ def p_expression_var_assign(p):
     '''
     expression : NAME
     '''
-    print("EXPRESSION VAR ASSIGN")
     p[0] = ('var', p[1])
+    print("EXPRESSION VAR ASSIGN:", p[0])
 
 #grammar for equating values
 
@@ -189,8 +208,8 @@ def p_var_assign(p):
     '''
     var_assign : NAME EQUALS expression
     '''
-    print("VAR ASSIGN")
     p[0] = ('=', p[1], p[3])
+    print("VAR ASSIGN:",p[0])
 
 #grammar for deciding operators
 
@@ -198,8 +217,8 @@ def p_expression(p):
     '''
     expression : expression_operation
     '''
-    print("EXPRESSION")
     p[0] = p[1]
+    print("EXPRESSION:", p[0])
 
 #grammar for infix operators
 
@@ -219,15 +238,15 @@ def p_expression_operation(p):
                          | expression AND expression
                          | expression OR expression
     '''
-    print("EXPRESSION OPERATION")
     p[0] = (p[2],p[1],p[3])
+    print("EXPRESSION OPERATION:", p[0])
 
 def p_expression_operation_not(p):
     '''
     expression_operation : NOT expression
     '''
-    print("EXPRESSION OPERATION NOT")
     p[0] = (p[1], p[2])
+    print("EXPRESSION OPERATION NOT:", p[0])
 #grammar for data types
 
 def p_expression_data_type(p):
@@ -238,8 +257,8 @@ def p_expression_data_type(p):
                | TRUE
                | FALSE
     '''
-    print("EXPRESSION TO DATATYPE")
     p[0] = p[1]
+    print("EXPRESSION TO DATATYPE:", p[0])
 
 #grammar for parenthesis
 
@@ -247,17 +266,17 @@ def p_expression_parenthesis(p):
     '''
     expression : LPAREN expression RPAREN
     '''
-    print("EXPRESSION PARENTHESIS")
     p[0] = p[2]
+    print("EXPRESSION PARENTHESIS", p[0])
 
 #grammar for if statement
 
 def p_conditional(p):
     '''
-    conditional : IF expression THEN language else_if_blocks else_block STOP
+    conditional : IF expression START NEWLINE language STOP else_if_blocks else_block 
     '''
-    print("CONDITONAL")
-    p[0] = ('IF', p[2], p[4], p[5], p[6])
+    p[0] = ('IF', p[2], p[5], p[7], p[8])
+    print("CONDITIONAL", p[0])
         
 #grammar for deciding if 0 or more else if statements
 
@@ -268,39 +287,45 @@ def p_else_if_blocks(p):
     '''
     if len(p) == 2:
         p[0] = 'NO ELSE IF'
+    elif p[1] == 'NO ELSE IF':
+        p[0] = p[2]
+        print("ELSEIF:",p[0])
     else:
-        p[0] = ('MULTIELSEIF', p[1], p[2])
+        p[0] = ('MULTIELSEIF', p[2], p[1])
+        print("MULTIELSEIF:", p[0])
 
 #grammar for else if statement
 
 def p_else_if_block(p):
     '''
-    else_if_block : ELSE_IF expression THEN language
+    else_if_block : ELSE_IF expression START NEWLINE language STOP
     '''
-    print("CONDITOINAL ELSE IF")
-    p[0] = ('ELSEIF',p[2],p[4])
+    p[0] = ('ELSEIF',p[2],p[5])
+    print("CONDITIONAL ELSE IF:", p[0])
 
 #grammar for else statement
 
 def p_else_block(p):
     '''
-    else_block : ELSE language
+    else_block : ELSE START NEWLINE language STOP
                | empty
     '''
     if len(p) == 2:
         p[0] = 'NO ELSE'
+        print("NO ELSE:", p[0])
     else:
-        print("ELSE")
-        p[0] = ('ELSE',p[2])
+        p[0] = ('ELSE',p[4])
+        print("ELSE:",p[0])
 
 #grammar for while
 
 def p_iterative(p):
     '''
-    iterative : WHILE expression THEN language STOP
+    iterative : WHILE expression START NEWLINE language STOP
     '''
-    print("ITERATIVE")
-    p[0] = ('WHILE', p[2],p[4])
+    p[0] = ('WHILE', p[2],p[5])
+    print("ITERATIVE:", p[0])
+
 
 #-------------------------------------------------#
 
@@ -512,6 +537,10 @@ if len(argv) < 2:
         parser.parse(s)
 
 elif len(argv) == 2:
+    extenstion = argv[1].split('.')[1]
+    if extenstion != 'uwu':
+        print("Invalid File Name")
+        quit()
 
     filename = open_file(argv[1])
 
