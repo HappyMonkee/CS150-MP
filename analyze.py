@@ -494,12 +494,32 @@ def run(p):
     #     return p
 
 
-while True:             #we should be able to read from files ye? - hans
-    try:
-        s = input(">>> ")
-        if(s == "UMU"):              # added exit code via cmd
+
+
+def open_file(filename):
+    data = open(filename,"r")
+    return data
+
+if len(argv) < 2:
+    while True:             #we should be able to read from files ye? - hans
+        try:
+            s = input(">>> ")
+            if(s == "UMU"):              # added exit code via cmd
+                break
+        except EOFError:
+            print()
             break
-    except EOFError:
-        print()
-        break
-    parser.parse(s)
+        parser.parse(s)
+
+elif len(argv) == 2:
+
+    filename = open_file(argv[1])
+
+    while True:
+        try:
+            s = filename.read()
+            if s == "":
+                break
+        except EOFError:
+            break
+        parser.parse(s)
