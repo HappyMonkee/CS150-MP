@@ -12,6 +12,7 @@ reserved = {
     'not'       : 'NOT',
 
     'if'        : 'IF',
+    'elseif'    : 'ELSE_IF',
     'else'      : 'ELSE',
     'then'      : 'THEN',
     'while'     : 'WHILE',
@@ -28,7 +29,7 @@ tokens = [
     'LD', 'LDEQ', 'GD', 'GDEQ', 'NOTEQ', 'EQUALEQUAL',
     'AND', 'OR', 'NOT',
     'LPAREN', 'RPAREN',
-    'IF', 'ELSE', 'THEN','WHILE', 'STOP', 
+    'IF', 'ELSE_IF', 'ELSE', 'THEN','WHILE', 'STOP', 
     'PRINT', 'READ'      
 ]
 
@@ -250,34 +251,48 @@ def p_expression_parenthesis(p):
     print("EXPRESSION PARENTHESIS")
     p[0] = p[2]
 
-#grammar for deciding between if or if else
+#grammar for if statement
 
 def p_conditional(p):
     '''
-    conditional : conditional_if
-                | conditional_if_else
+    conditional : IF expression THEN language else_if_blocks else_block STOP
     '''
     print("CONDITONAL")
-    p[0] = p[1]
+    p[0] = ('IF', p[2], p[4], p[5], p[6])
+        
+#grammar for deciding if 0 or more else if statements
 
-#grammar for if else statement
-
-def p_conditional_if_else(p):
+def p_else_if_blocks(p):
     '''
-    conditional_if_else : IF expression THEN language STOP ELSE THEN language STOP
+    else_if_blocks : empty
+                   | else_if_blocks else_if_block
     '''
-    print("CONDITONAL IF ELSE")
-    p[0] = ('IFELSE',p[2],p[4],p[8])
+    if len(p) == 2:
+        p[0] = 'NO ELSE IF'
+    else:
+        p[0] = ('MULTIELSEIF', p[1], p[2])
 
-#grammar for if statement
+#grammar for else if statement
 
-def p_conditional_if(p):
+def p_else_if_block(p):
     '''
-    conditional_if : IF expression THEN language STOP
+    else_if_block : ELSE_IF expression THEN language
     '''
+    print("CONDITOINAL ELSE IF")
+    p[0] = ('ELSEIF',p[2],p[4])
 
-    print("CONDITOINAL IF")
-    p[0] = ('IF',p[2],p[4])
+#grammar for else statement
+
+def p_else_block(p):
+    '''
+    else_block : ELSE language
+               | empty
+    '''
+    if len(p) == 2:
+        p[0] = 'NO ELSE'
+    else:
+        print("ELSE")
+        p[0] = ('ELSE',p[2])
 
 #grammar for while
 
