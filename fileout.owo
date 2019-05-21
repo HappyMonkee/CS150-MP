@@ -1,1 +1,1 @@
-('WHILE', True, ('LANGUAGE', ('MULTILINES', ('WHILE', True, ('LANGUAGE', ('IF', True, ('LANGUAGE', ('MULTILINES', ('=', 'a', ('+', 10, 5)), ('PRINT', ('var', 'a')))), 'NO ELSE IF', 'NO ELSE'))), ('PRINT', ('var', 'a')))))
+('LANGUAGE', ('FUNCTION', 'int', 'func', ('int', 'x', ('int', 'y', ('string', 'z', ('float', 'haha')))), ('LANGUAGE', ('MULTILINES', ('=', 'x', 0), ('WHILE', ('<w<', ('var', 'x'), 0), ('LANGUAGE', ('MULTILINES', ('PRINT', 'hi'), ('=', 'x', ('+w+', ('var', 'x'), 1))))))), ('RETURN', 'return', ('var', 'x'))))

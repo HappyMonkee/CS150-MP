@@ -1,11 +1,9 @@
-int func(int x, int y, string z, float haha) {
-    x = 0
-    while (x < 0) {
-        print("hi")
-        x = x + 1
-    }
+int func(int x, int y, string z, float haha) {.w.}/
+    x ish 0
+    wiw (x <w< 0) {.w.}/
+        pwint("hi")
+        x ish x +w+ 1
+    \{.w.}
     return x
-}
+\{.w.}
 
-void wahoo() {
-}
