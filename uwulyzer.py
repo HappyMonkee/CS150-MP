@@ -632,12 +632,17 @@ def run(p):
             return stmt
 
         elif p[0] == 'pwint':
-            # (READ, name)
-            a = str(run(p[1]))
+            # (pwint, name)
 
-            if a not in env:
-                print('Undeclared variable found! - ', a)               
-                return
+            if type(p[1]) == type:
+                a = str(run(p[1]))
+
+                if a not in env:
+                    print("Undeclared variable found! - ", a)
+                    return
+            else:
+                a = str(run(p[1]))
+
 
             if env[a] == 'int':
                 stmt = "printf(\"%%d\\n\", %s);" % (a)
@@ -649,7 +654,24 @@ def run(p):
             return stmt
 
         elif p[0] == 'READ':
-            env[p[1]] = input()
+            # (READ, name)
+            if type(p[1]) == tuple:
+                a = str(run(p[1]))
+
+                if a not in env:
+                    print("Undeclared variable found! - ", a)
+                    return
+            else:
+                a = str(run(p[1]))
+
+            if env[a] == 'int':
+                stmt = "scanff(\"%%d\", &%s);" % (a)
+            elif env[a] == 'str':
+                stmt = "scanff(\"%%s\", &%s);" % (a)
+            elif env[a] == 'float':
+                stmt = "scanff(\"%%f\", &%s);" % (a)
+
+            return stmt
     else:
         return p
 
