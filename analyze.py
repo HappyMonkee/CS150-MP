@@ -29,6 +29,7 @@ tokens = [
     'LD', 'LDEQ', 'GD', 'GDEQ', 'NOTEQ', 'EQUALEQUAL',
     'AND', 'OR', 'NOT',
     'LPAREN', 'RPAREN',
+    'LBRACE', 'RBRACE',
     'IF', 'ELSE_IF', 'ELSE', 'WHILE', 
     'START', 'STOP', 
     'PRINT', 'READ',
@@ -45,6 +46,8 @@ t_START         =   r'\{'
 t_STOP          =   r'\}'
 t_LPAREN        =   r'\('
 t_RPAREN        =   r'\)'
+t_LBRACE        =   r'\['
+t_RBRACE        =   r'\]'
 t_PLUS          =   r'\+'
 t_MINUS         =   r'\-'
 t_MULTIPLY      =   r'\*'
@@ -259,6 +262,73 @@ def p_expression_data_type(p):
     '''
     p[0] = p[1]
     print("EXPRESSION TO DATATYPE:", p[0])
+
+def p_expression_array(p):
+    '''
+    expression : LBRACE int_type_array RBRACE
+               | LBRACE float_type_array RBRACE
+               | LBRACE string_type_array RBRACE
+               | LBRACE bool_type_array RBRACE
+    '''
+    p[0] = ('ARRAY', p[2])
+    print("EXPRESSION TO ARRAY:", p[0])
+
+def p_int_type_array(p):
+    '''
+    int_type_array : empty
+                   | INT int_type_array
+    '''
+    if len(p) == 3:
+        if p[2] == None:
+            p[0] = ('INT', p[1])
+        else:
+            p[0] = ('INT', p[1], p[2])
+    else:
+        p[0] = None
+    print("ARRAY IS INT-TYPED:", p[0])
+    
+def p_float_type_array(p):
+    '''
+    float_type_array : empty
+                     | FLOAT float_type_array
+    '''
+    if len(p) == 3:
+        if p[2] == None:
+            p[0] = ('FLOAT', p[1])
+        else:
+            p[0] = ('FLOAT', p[1], p[2])
+    else:
+        p[0] = None
+    print("ARRAY IS FLOAT-TYPED:", p[0])
+    
+def p_string_type_array(p):
+    '''
+    string_type_array : empty
+                      | STRING string_type_array
+    '''
+    if len(p) == 3:
+        if p[2] == None:
+            p[0] = ('STRING', p[1])
+        else:
+            p[0] = ('STRING', p[1], p[2])
+    else:
+        p[0] = None
+    print("ARRAY IS STRING-TYPED:", p[0])
+
+def p_bool_type_array(p):
+    '''
+    bool_type_array : empty
+                      | TRUE bool_type_array
+                      | FALSE bool_type_array
+    '''
+    if len(p) == 3:
+        if p[2] == None:
+            p[0] = ('BOOL', p[1])
+        else:
+            p[0] = ('BOOL', p[1], p[2])
+    else:
+        p[0] = None
+    print("ARRAY IS BOOL-TYPED:", p[0])
 
 #grammar for parenthesis
 

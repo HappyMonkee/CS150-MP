@@ -39,68 +39,87 @@ Rule 33    expression -> FLOAT
 Rule 34    expression -> STRING
 Rule 35    expression -> TRUE
 Rule 36    expression -> FALSE
-Rule 37    expression -> LPAREN expression RPAREN
-Rule 38    conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block
-Rule 39    else_if_blocks -> empty
-Rule 40    else_if_blocks -> else_if_blocks else_if_block
-Rule 41    else_if_block -> ELSE_IF expression START NEWLINE language STOP
-Rule 42    else_block -> ELSE START NEWLINE language STOP
-Rule 43    else_block -> empty
-Rule 44    iterative -> WHILE expression START NEWLINE language STOP
-Rule 45    empty -> <empty>
+Rule 37    expression -> LBRACE int_type_array RBRACE
+Rule 38    expression -> LBRACE float_type_array RBRACE
+Rule 39    expression -> LBRACE string_type_array RBRACE
+Rule 40    expression -> LBRACE bool_type_array RBRACE
+Rule 41    int_type_array -> empty
+Rule 42    int_type_array -> INT int_type_array
+Rule 43    float_type_array -> empty
+Rule 44    float_type_array -> FLOAT float_type_array
+Rule 45    string_type_array -> empty
+Rule 46    string_type_array -> STRING string_type_array
+Rule 47    bool_type_array -> empty
+Rule 48    bool_type_array -> TRUE bool_type_array
+Rule 49    bool_type_array -> FALSE bool_type_array
+Rule 50    expression -> LPAREN expression RPAREN
+Rule 51    conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block
+Rule 52    else_if_blocks -> empty
+Rule 53    else_if_blocks -> else_if_blocks else_if_block
+Rule 54    else_if_block -> ELSE_IF expression START NEWLINE language STOP
+Rule 55    else_block -> ELSE START NEWLINE language STOP
+Rule 56    else_block -> empty
+Rule 57    iterative -> WHILE expression START NEWLINE language STOP
+Rule 58    empty -> <empty>
 
 Terminals, with rules where they appear
 
 AND                  : 29
 DIVIDE               : 19
-ELSE                 : 42
-ELSE_IF              : 41
+ELSE                 : 55
+ELSE_IF              : 54
 EQUALEQUAL           : 27
 EQUALS               : 16
-FALSE                : 36
-FLOAT                : 33
+FALSE                : 36 49
+FLOAT                : 33 44
 GD                   : 25
 GDEQ                 : 26
-IF                   : 38
-INT                  : 32
+IF                   : 51
+INT                  : 32 42
+LBRACE               : 37 38 39 40
 LD                   : 23
 LDEQ                 : 24
-LPAREN               : 12 14 37
+LPAREN               : 12 14 50
 MINUS                : 22
 MODULO               : 20
 MULTIPLY             : 18
 NAME                 : 12 15 16
-NEWLINE              : 3 38 41 42 44
+NEWLINE              : 3 51 54 55 57
 NOT                  : 31
 NOTEQ                : 28
 OR                   : 30
 PLUS                 : 21
 PRINT                : 14
+RBRACE               : 37 38 39 40
 READ                 : 12
-RPAREN               : 12 14 37
-START                : 38 41 42 44
-STOP                 : 38 41 42 44
-STRING               : 34
-TRUE                 : 35
-WHILE                : 44
+RPAREN               : 12 14 50
+START                : 51 54 55 57
+STOP                 : 51 54 55 57
+STRING               : 34 46
+TRUE                 : 35 48
+WHILE                : 57
 error                : 
 
 Nonterminals, with rules where they appear
 
+bool_type_array      : 40 48 49
 conditional          : 8
-else_block           : 38
-else_if_block        : 40
-else_if_blocks       : 38 40
-empty                : 2 11 39 43
-expression           : 5 14 16 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29 30 30 31 37 38 41 44
+else_block           : 51
+else_if_block        : 53
+else_if_blocks       : 51 53
+empty                : 2 11 41 43 45 47 52 56
+expression           : 5 14 16 18 18 19 19 20 20 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28 29 29 30 30 31 50 51 54 57
 expression_operation : 17
+float_type_array     : 38 44
 input                : 10
+int_type_array       : 37 42
 iterative            : 7
-language             : 1 3 38 41 42 44
+language             : 1 3 51 54 55 57
 line                 : 3 4
 output               : 9
 output_print         : 13
 start                : 0
+string_type_array    : 39 46
 var_assign           : 6
 
 Parsing method: LALR
@@ -112,7 +131,7 @@ state 0
     (2) start -> . empty
     (3) language -> . language NEWLINE line
     (4) language -> . line
-    (45) empty -> .
+    (58) empty -> .
     (5) line -> . expression
     (6) line -> . var_assign
     (7) line -> . iterative
@@ -127,10 +146,14 @@ state 0
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
@@ -149,20 +172,21 @@ state 0
     (31) expression_operation -> . NOT expression
     (14) output_print -> . PRINT LPAREN expression RPAREN
 
-    $end            reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
+    $end            reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
     NAME            shift and go to state 11
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
     start                          shift and go to state 1
     language                       shift and go to state 2
@@ -175,7 +199,7 @@ state 0
     output                         shift and go to state 9
     input                          shift and go to state 10
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
 state 1
 
@@ -189,7 +213,7 @@ state 2
     (3) language -> language . NEWLINE line
 
     $end            reduce using rule 1 (start -> language .)
-    NEWLINE         shift and go to state 25
+    NEWLINE         shift and go to state 26
 
 
 state 3
@@ -233,19 +257,19 @@ state 5
     NEWLINE         reduce using rule 5 (line -> expression .)
     $end            reduce using rule 5 (line -> expression .)
     STOP            reduce using rule 5 (line -> expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
 state 6
@@ -314,7 +338,7 @@ state 11
     NEWLINE         reduce using rule 15 (expression -> NAME .)
     $end            reduce using rule 15 (expression -> NAME .)
     STOP            reduce using rule 15 (expression -> NAME .)
-    EQUALS          shift and go to state 39
+    EQUALS          shift and go to state 40
 
 
 state 12
@@ -463,45 +487,37 @@ state 17
 
 state 18
 
-    (37) expression -> LPAREN . expression RPAREN
-    (15) expression -> . NAME
-    (17) expression -> . expression_operation
-    (32) expression -> . INT
-    (33) expression -> . FLOAT
-    (34) expression -> . STRING
-    (35) expression -> . TRUE
-    (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
-    (18) expression_operation -> . expression MULTIPLY expression
-    (19) expression_operation -> . expression DIVIDE expression
-    (20) expression_operation -> . expression MODULO expression
-    (21) expression_operation -> . expression PLUS expression
-    (22) expression_operation -> . expression MINUS expression
-    (23) expression_operation -> . expression LD expression
-    (24) expression_operation -> . expression LDEQ expression
-    (25) expression_operation -> . expression GD expression
-    (26) expression_operation -> . expression GDEQ expression
-    (27) expression_operation -> . expression EQUALEQUAL expression
-    (28) expression_operation -> . expression NOTEQ expression
-    (29) expression_operation -> . expression AND expression
-    (30) expression_operation -> . expression OR expression
-    (31) expression_operation -> . NOT expression
+    (37) expression -> LBRACE . int_type_array RBRACE
+    (38) expression -> LBRACE . float_type_array RBRACE
+    (39) expression -> LBRACE . string_type_array RBRACE
+    (40) expression -> LBRACE . bool_type_array RBRACE
+    (41) int_type_array -> . empty
+    (42) int_type_array -> . INT int_type_array
+    (43) float_type_array -> . empty
+    (44) float_type_array -> . FLOAT float_type_array
+    (45) string_type_array -> . empty
+    (46) string_type_array -> . STRING string_type_array
+    (47) bool_type_array -> . empty
+    (48) bool_type_array -> . TRUE bool_type_array
+    (49) bool_type_array -> . FALSE bool_type_array
+    (58) empty -> .
 
-    NAME            shift and go to state 41
-    INT             shift and go to state 13
-    FLOAT           shift and go to state 14
-    STRING          shift and go to state 15
-    TRUE            shift and go to state 16
-    FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    INT             shift and go to state 46
+    FLOAT           shift and go to state 47
+    STRING          shift and go to state 48
+    TRUE            shift and go to state 49
+    FALSE           shift and go to state 50
+    RBRACE          reduce using rule 58 (empty -> .)
 
-    expression                     shift and go to state 40
-    expression_operation           shift and go to state 12
+    int_type_array                 shift and go to state 41
+    float_type_array               shift and go to state 42
+    string_type_array              shift and go to state 43
+    bool_type_array                shift and go to state 44
+    empty                          shift and go to state 45
 
 state 19
 
-    (44) iterative -> WHILE . expression START NEWLINE language STOP
+    (50) expression -> LPAREN . expression RPAREN
     (15) expression -> . NAME
     (17) expression -> . expression_operation
     (32) expression -> . INT
@@ -509,7 +525,11 @@ state 19
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -525,21 +545,22 @@ state 19
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 42
+    expression                     shift and go to state 51
     expression_operation           shift and go to state 12
 
 state 20
 
-    (38) conditional -> IF . expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> WHILE . expression START NEWLINE language STOP
     (15) expression -> . NAME
     (17) expression -> . expression_operation
     (32) expression -> . INT
@@ -547,7 +568,11 @@ state 20
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -563,19 +588,63 @@ state 20
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 43
+    expression                     shift and go to state 53
     expression_operation           shift and go to state 12
 
 state 21
+
+    (51) conditional -> IF . expression START NEWLINE language STOP else_if_blocks else_block
+    (15) expression -> . NAME
+    (17) expression -> . expression_operation
+    (32) expression -> . INT
+    (33) expression -> . FLOAT
+    (34) expression -> . STRING
+    (35) expression -> . TRUE
+    (36) expression -> . FALSE
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
+    (18) expression_operation -> . expression MULTIPLY expression
+    (19) expression_operation -> . expression DIVIDE expression
+    (20) expression_operation -> . expression MODULO expression
+    (21) expression_operation -> . expression PLUS expression
+    (22) expression_operation -> . expression MINUS expression
+    (23) expression_operation -> . expression LD expression
+    (24) expression_operation -> . expression LDEQ expression
+    (25) expression_operation -> . expression GD expression
+    (26) expression_operation -> . expression GDEQ expression
+    (27) expression_operation -> . expression EQUALEQUAL expression
+    (28) expression_operation -> . expression NOTEQ expression
+    (29) expression_operation -> . expression AND expression
+    (30) expression_operation -> . expression OR expression
+    (31) expression_operation -> . NOT expression
+
+    NAME            shift and go to state 52
+    INT             shift and go to state 13
+    FLOAT           shift and go to state 14
+    STRING          shift and go to state 15
+    TRUE            shift and go to state 16
+    FALSE           shift and go to state 17
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
+
+    expression                     shift and go to state 54
+    expression_operation           shift and go to state 12
+
+state 22
 
     (13) output -> output_print .
 
@@ -584,14 +653,14 @@ state 21
     STOP            reduce using rule 13 (output -> output_print .)
 
 
-state 22
+state 23
 
     (12) input -> READ . LPAREN NAME RPAREN
 
-    LPAREN          shift and go to state 44
+    LPAREN          shift and go to state 55
 
 
-state 23
+state 24
 
     (31) expression_operation -> NOT . expression
     (15) expression -> . NAME
@@ -601,7 +670,11 @@ state 23
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -617,26 +690,27 @@ state 23
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 45
+    expression                     shift and go to state 56
     expression_operation           shift and go to state 12
 
-state 24
+state 25
 
     (14) output_print -> PRINT . LPAREN expression RPAREN
 
-    LPAREN          shift and go to state 46
+    LPAREN          shift and go to state 57
 
 
-state 25
+state 26
 
     (3) language -> language NEWLINE . line
     (5) line -> . expression
@@ -653,13 +727,17 @@ state 25
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
-    (45) empty -> .
+    (58) empty -> .
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -682,28 +760,29 @@ state 25
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    NEWLINE         reduce using rule 45 (empty -> .)
-    $end            reduce using rule 45 (empty -> .)
-    STOP            reduce using rule 45 (empty -> .)
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    NEWLINE         reduce using rule 58 (empty -> .)
+    $end            reduce using rule 58 (empty -> .)
+    STOP            reduce using rule 58 (empty -> .)
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
-    line                           shift and go to state 47
+    line                           shift and go to state 58
     expression                     shift and go to state 5
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
-    empty                          shift and go to state 48
+    empty                          shift and go to state 59
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
-state 26
+state 27
 
     (18) expression_operation -> expression MULTIPLY . expression
     (15) expression -> . NAME
@@ -713,7 +792,11 @@ state 26
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -729,19 +812,20 @@ state 26
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 49
+    expression                     shift and go to state 60
     expression_operation           shift and go to state 12
 
-state 27
+state 28
 
     (19) expression_operation -> expression DIVIDE . expression
     (15) expression -> . NAME
@@ -751,7 +835,11 @@ state 27
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -767,19 +855,20 @@ state 27
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 50
+    expression                     shift and go to state 61
     expression_operation           shift and go to state 12
 
-state 28
+state 29
 
     (20) expression_operation -> expression MODULO . expression
     (15) expression -> . NAME
@@ -789,7 +878,11 @@ state 28
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -805,19 +898,20 @@ state 28
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 51
+    expression                     shift and go to state 62
     expression_operation           shift and go to state 12
 
-state 29
+state 30
 
     (21) expression_operation -> expression PLUS . expression
     (15) expression -> . NAME
@@ -827,7 +921,11 @@ state 29
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -843,19 +941,20 @@ state 29
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 52
+    expression                     shift and go to state 63
     expression_operation           shift and go to state 12
 
-state 30
+state 31
 
     (22) expression_operation -> expression MINUS . expression
     (15) expression -> . NAME
@@ -865,7 +964,11 @@ state 30
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -881,19 +984,20 @@ state 30
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 53
+    expression                     shift and go to state 64
     expression_operation           shift and go to state 12
 
-state 31
+state 32
 
     (23) expression_operation -> expression LD . expression
     (15) expression -> . NAME
@@ -903,7 +1007,11 @@ state 31
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -919,19 +1027,20 @@ state 31
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 54
+    expression                     shift and go to state 65
     expression_operation           shift and go to state 12
 
-state 32
+state 33
 
     (24) expression_operation -> expression LDEQ . expression
     (15) expression -> . NAME
@@ -941,7 +1050,11 @@ state 32
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -957,19 +1070,20 @@ state 32
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 55
+    expression                     shift and go to state 66
     expression_operation           shift and go to state 12
 
-state 33
+state 34
 
     (25) expression_operation -> expression GD . expression
     (15) expression -> . NAME
@@ -979,7 +1093,11 @@ state 33
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -995,19 +1113,20 @@ state 33
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 56
+    expression                     shift and go to state 67
     expression_operation           shift and go to state 12
 
-state 34
+state 35
 
     (26) expression_operation -> expression GDEQ . expression
     (15) expression -> . NAME
@@ -1017,7 +1136,11 @@ state 34
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1033,19 +1156,20 @@ state 34
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 57
+    expression                     shift and go to state 68
     expression_operation           shift and go to state 12
 
-state 35
+state 36
 
     (27) expression_operation -> expression EQUALEQUAL . expression
     (15) expression -> . NAME
@@ -1055,7 +1179,11 @@ state 35
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1071,19 +1199,20 @@ state 35
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 58
+    expression                     shift and go to state 69
     expression_operation           shift and go to state 12
 
-state 36
+state 37
 
     (28) expression_operation -> expression NOTEQ . expression
     (15) expression -> . NAME
@@ -1093,7 +1222,11 @@ state 36
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1109,19 +1242,20 @@ state 36
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 59
+    expression                     shift and go to state 70
     expression_operation           shift and go to state 12
 
-state 37
+state 38
 
     (29) expression_operation -> expression AND . expression
     (15) expression -> . NAME
@@ -1131,7 +1265,11 @@ state 37
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1147,19 +1285,20 @@ state 37
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 60
+    expression                     shift and go to state 71
     expression_operation           shift and go to state 12
 
-state 38
+state 39
 
     (30) expression_operation -> expression OR . expression
     (15) expression -> . NAME
@@ -1169,7 +1308,11 @@ state 38
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1185,19 +1328,20 @@ state 38
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 61
+    expression                     shift and go to state 72
     expression_operation           shift and go to state 12
 
-state 39
+state 40
 
     (16) var_assign -> NAME EQUALS . expression
     (15) expression -> . NAME
@@ -1207,7 +1351,11 @@ state 39
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1223,21 +1371,136 @@ state 39
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 62
+    expression                     shift and go to state 73
     expression_operation           shift and go to state 12
 
-state 40
+state 41
 
-    (37) expression -> LPAREN expression . RPAREN
+    (37) expression -> LBRACE int_type_array . RBRACE
+
+    RBRACE          shift and go to state 74
+
+
+state 42
+
+    (38) expression -> LBRACE float_type_array . RBRACE
+
+    RBRACE          shift and go to state 75
+
+
+state 43
+
+    (39) expression -> LBRACE string_type_array . RBRACE
+
+    RBRACE          shift and go to state 76
+
+
+state 44
+
+    (40) expression -> LBRACE bool_type_array . RBRACE
+
+    RBRACE          shift and go to state 77
+
+
+state 45
+
+    (41) int_type_array -> empty .
+    (43) float_type_array -> empty .
+    (45) string_type_array -> empty .
+    (47) bool_type_array -> empty .
+
+  ! reduce/reduce conflict for RBRACE resolved using rule 41 (int_type_array -> empty .)
+  ! reduce/reduce conflict for RBRACE resolved using rule 41 (int_type_array -> empty .)
+  ! reduce/reduce conflict for RBRACE resolved using rule 41 (int_type_array -> empty .)
+    RBRACE          reduce using rule 41 (int_type_array -> empty .)
+
+  ! RBRACE          [ reduce using rule 43 (float_type_array -> empty .) ]
+  ! RBRACE          [ reduce using rule 45 (string_type_array -> empty .) ]
+  ! RBRACE          [ reduce using rule 47 (bool_type_array -> empty .) ]
+
+
+state 46
+
+    (42) int_type_array -> INT . int_type_array
+    (41) int_type_array -> . empty
+    (42) int_type_array -> . INT int_type_array
+    (58) empty -> .
+
+    INT             shift and go to state 46
+    RBRACE          reduce using rule 58 (empty -> .)
+
+    int_type_array                 shift and go to state 78
+    empty                          shift and go to state 79
+
+state 47
+
+    (44) float_type_array -> FLOAT . float_type_array
+    (43) float_type_array -> . empty
+    (44) float_type_array -> . FLOAT float_type_array
+    (58) empty -> .
+
+    FLOAT           shift and go to state 47
+    RBRACE          reduce using rule 58 (empty -> .)
+
+    float_type_array               shift and go to state 80
+    empty                          shift and go to state 81
+
+state 48
+
+    (46) string_type_array -> STRING . string_type_array
+    (45) string_type_array -> . empty
+    (46) string_type_array -> . STRING string_type_array
+    (58) empty -> .
+
+    STRING          shift and go to state 48
+    RBRACE          reduce using rule 58 (empty -> .)
+
+    string_type_array              shift and go to state 82
+    empty                          shift and go to state 83
+
+state 49
+
+    (48) bool_type_array -> TRUE . bool_type_array
+    (47) bool_type_array -> . empty
+    (48) bool_type_array -> . TRUE bool_type_array
+    (49) bool_type_array -> . FALSE bool_type_array
+    (58) empty -> .
+
+    TRUE            shift and go to state 49
+    FALSE           shift and go to state 50
+    RBRACE          reduce using rule 58 (empty -> .)
+
+    bool_type_array                shift and go to state 84
+    empty                          shift and go to state 85
+
+state 50
+
+    (49) bool_type_array -> FALSE . bool_type_array
+    (47) bool_type_array -> . empty
+    (48) bool_type_array -> . TRUE bool_type_array
+    (49) bool_type_array -> . FALSE bool_type_array
+    (58) empty -> .
+
+    TRUE            shift and go to state 49
+    FALSE           shift and go to state 50
+    RBRACE          reduce using rule 58 (empty -> .)
+
+    bool_type_array                shift and go to state 86
+    empty                          shift and go to state 85
+
+state 51
+
+    (50) expression -> LPAREN expression . RPAREN
     (18) expression_operation -> expression . MULTIPLY expression
     (19) expression_operation -> expression . DIVIDE expression
     (20) expression_operation -> expression . MODULO expression
@@ -1252,23 +1515,23 @@ state 40
     (29) expression_operation -> expression . AND expression
     (30) expression_operation -> expression . OR expression
 
-    RPAREN          shift and go to state 63
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    RPAREN          shift and go to state 87
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 41
+state 52
 
     (15) expression -> NAME .
 
@@ -1292,9 +1555,9 @@ state 41
     STOP            reduce using rule 15 (expression -> NAME .)
 
 
-state 42
+state 53
 
-    (44) iterative -> WHILE expression . START NEWLINE language STOP
+    (57) iterative -> WHILE expression . START NEWLINE language STOP
     (18) expression_operation -> expression . MULTIPLY expression
     (19) expression_operation -> expression . DIVIDE expression
     (20) expression_operation -> expression . MODULO expression
@@ -1309,25 +1572,25 @@ state 42
     (29) expression_operation -> expression . AND expression
     (30) expression_operation -> expression . OR expression
 
-    START           shift and go to state 64
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    START           shift and go to state 88
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 43
+state 54
 
-    (38) conditional -> IF expression . START NEWLINE language STOP else_if_blocks else_block
+    (51) conditional -> IF expression . START NEWLINE language STOP else_if_blocks else_block
     (18) expression_operation -> expression . MULTIPLY expression
     (19) expression_operation -> expression . DIVIDE expression
     (20) expression_operation -> expression . MODULO expression
@@ -1342,30 +1605,30 @@ state 43
     (29) expression_operation -> expression . AND expression
     (30) expression_operation -> expression . OR expression
 
-    START           shift and go to state 65
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    START           shift and go to state 89
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 44
+state 55
 
     (12) input -> READ LPAREN . NAME RPAREN
 
-    NAME            shift and go to state 66
+    NAME            shift and go to state 90
 
 
-state 45
+state 56
 
     (31) expression_operation -> NOT expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1401,22 +1664,22 @@ state 45
     START           reduce using rule 31 (expression_operation -> NOT expression .)
     STOP            reduce using rule 31 (expression_operation -> NOT expression .)
 
-  ! MULTIPLY        [ shift and go to state 26 ]
-  ! DIVIDE          [ shift and go to state 27 ]
-  ! MODULO          [ shift and go to state 28 ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! MULTIPLY        [ shift and go to state 27 ]
+  ! DIVIDE          [ shift and go to state 28 ]
+  ! MODULO          [ shift and go to state 29 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 46
+state 57
 
     (14) output_print -> PRINT LPAREN . expression RPAREN
     (15) expression -> . NAME
@@ -1426,7 +1689,11 @@ state 46
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -1442,19 +1709,20 @@ state 46
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 67
+    expression                     shift and go to state 91
     expression_operation           shift and go to state 12
 
-state 47
+state 58
 
     (3) language -> language NEWLINE line .
 
@@ -1463,7 +1731,7 @@ state 47
     STOP            reduce using rule 3 (language -> language NEWLINE line .)
 
 
-state 48
+state 59
 
     (11) line -> empty .
 
@@ -1472,7 +1740,7 @@ state 48
     STOP            reduce using rule 11 (line -> empty .)
 
 
-state 49
+state 60
 
     (18) expression_operation -> expression MULTIPLY expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1508,22 +1776,22 @@ state 49
     START           reduce using rule 18 (expression_operation -> expression MULTIPLY expression .)
     STOP            reduce using rule 18 (expression_operation -> expression MULTIPLY expression .)
 
-  ! MULTIPLY        [ shift and go to state 26 ]
-  ! DIVIDE          [ shift and go to state 27 ]
-  ! MODULO          [ shift and go to state 28 ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! MULTIPLY        [ shift and go to state 27 ]
+  ! DIVIDE          [ shift and go to state 28 ]
+  ! MODULO          [ shift and go to state 29 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 50
+state 61
 
     (19) expression_operation -> expression DIVIDE expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1559,22 +1827,22 @@ state 50
     START           reduce using rule 19 (expression_operation -> expression DIVIDE expression .)
     STOP            reduce using rule 19 (expression_operation -> expression DIVIDE expression .)
 
-  ! MULTIPLY        [ shift and go to state 26 ]
-  ! DIVIDE          [ shift and go to state 27 ]
-  ! MODULO          [ shift and go to state 28 ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! MULTIPLY        [ shift and go to state 27 ]
+  ! DIVIDE          [ shift and go to state 28 ]
+  ! MODULO          [ shift and go to state 29 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 51
+state 62
 
     (20) expression_operation -> expression MODULO expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1610,22 +1878,22 @@ state 51
     START           reduce using rule 20 (expression_operation -> expression MODULO expression .)
     STOP            reduce using rule 20 (expression_operation -> expression MODULO expression .)
 
-  ! MULTIPLY        [ shift and go to state 26 ]
-  ! DIVIDE          [ shift and go to state 27 ]
-  ! MODULO          [ shift and go to state 28 ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! MULTIPLY        [ shift and go to state 27 ]
+  ! DIVIDE          [ shift and go to state 28 ]
+  ! MODULO          [ shift and go to state 29 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 52
+state 63
 
     (21) expression_operation -> expression PLUS expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1657,26 +1925,26 @@ state 52
     RPAREN          reduce using rule 21 (expression_operation -> expression PLUS expression .)
     START           reduce using rule 21 (expression_operation -> expression PLUS expression .)
     STOP            reduce using rule 21 (expression_operation -> expression PLUS expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
 
   ! MULTIPLY        [ reduce using rule 21 (expression_operation -> expression PLUS expression .) ]
   ! DIVIDE          [ reduce using rule 21 (expression_operation -> expression PLUS expression .) ]
   ! MODULO          [ reduce using rule 21 (expression_operation -> expression PLUS expression .) ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 53
+state 64
 
     (22) expression_operation -> expression MINUS expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1708,26 +1976,26 @@ state 53
     RPAREN          reduce using rule 22 (expression_operation -> expression MINUS expression .)
     START           reduce using rule 22 (expression_operation -> expression MINUS expression .)
     STOP            reduce using rule 22 (expression_operation -> expression MINUS expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
 
   ! MULTIPLY        [ reduce using rule 22 (expression_operation -> expression MINUS expression .) ]
   ! DIVIDE          [ reduce using rule 22 (expression_operation -> expression MINUS expression .) ]
   ! MODULO          [ reduce using rule 22 (expression_operation -> expression MINUS expression .) ]
-  ! PLUS            [ shift and go to state 29 ]
-  ! MINUS           [ shift and go to state 30 ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! PLUS            [ shift and go to state 30 ]
+  ! MINUS           [ shift and go to state 31 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 54
+state 65
 
     (23) expression_operation -> expression LD expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1757,28 +2025,28 @@ state 54
     RPAREN          reduce using rule 23 (expression_operation -> expression LD expression .)
     START           reduce using rule 23 (expression_operation -> expression LD expression .)
     STOP            reduce using rule 23 (expression_operation -> expression LD expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
 
   ! MULTIPLY        [ reduce using rule 23 (expression_operation -> expression LD expression .) ]
   ! DIVIDE          [ reduce using rule 23 (expression_operation -> expression LD expression .) ]
   ! MODULO          [ reduce using rule 23 (expression_operation -> expression LD expression .) ]
   ! PLUS            [ reduce using rule 23 (expression_operation -> expression LD expression .) ]
   ! MINUS           [ reduce using rule 23 (expression_operation -> expression LD expression .) ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 55
+state 66
 
     (24) expression_operation -> expression LDEQ expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1808,28 +2076,28 @@ state 55
     RPAREN          reduce using rule 24 (expression_operation -> expression LDEQ expression .)
     START           reduce using rule 24 (expression_operation -> expression LDEQ expression .)
     STOP            reduce using rule 24 (expression_operation -> expression LDEQ expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
 
   ! MULTIPLY        [ reduce using rule 24 (expression_operation -> expression LDEQ expression .) ]
   ! DIVIDE          [ reduce using rule 24 (expression_operation -> expression LDEQ expression .) ]
   ! MODULO          [ reduce using rule 24 (expression_operation -> expression LDEQ expression .) ]
   ! PLUS            [ reduce using rule 24 (expression_operation -> expression LDEQ expression .) ]
   ! MINUS           [ reduce using rule 24 (expression_operation -> expression LDEQ expression .) ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 56
+state 67
 
     (25) expression_operation -> expression GD expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1859,28 +2127,28 @@ state 56
     RPAREN          reduce using rule 25 (expression_operation -> expression GD expression .)
     START           reduce using rule 25 (expression_operation -> expression GD expression .)
     STOP            reduce using rule 25 (expression_operation -> expression GD expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
 
   ! MULTIPLY        [ reduce using rule 25 (expression_operation -> expression GD expression .) ]
   ! DIVIDE          [ reduce using rule 25 (expression_operation -> expression GD expression .) ]
   ! MODULO          [ reduce using rule 25 (expression_operation -> expression GD expression .) ]
   ! PLUS            [ reduce using rule 25 (expression_operation -> expression GD expression .) ]
   ! MINUS           [ reduce using rule 25 (expression_operation -> expression GD expression .) ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 57
+state 68
 
     (26) expression_operation -> expression GDEQ expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1910,28 +2178,28 @@ state 57
     RPAREN          reduce using rule 26 (expression_operation -> expression GDEQ expression .)
     START           reduce using rule 26 (expression_operation -> expression GDEQ expression .)
     STOP            reduce using rule 26 (expression_operation -> expression GDEQ expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
 
   ! MULTIPLY        [ reduce using rule 26 (expression_operation -> expression GDEQ expression .) ]
   ! DIVIDE          [ reduce using rule 26 (expression_operation -> expression GDEQ expression .) ]
   ! MODULO          [ reduce using rule 26 (expression_operation -> expression GDEQ expression .) ]
   ! PLUS            [ reduce using rule 26 (expression_operation -> expression GDEQ expression .) ]
   ! MINUS           [ reduce using rule 26 (expression_operation -> expression GDEQ expression .) ]
-  ! LD              [ shift and go to state 31 ]
-  ! LDEQ            [ shift and go to state 32 ]
-  ! GD              [ shift and go to state 33 ]
-  ! GDEQ            [ shift and go to state 34 ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! LD              [ shift and go to state 32 ]
+  ! LDEQ            [ shift and go to state 33 ]
+  ! GD              [ shift and go to state 34 ]
+  ! GDEQ            [ shift and go to state 35 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 58
+state 69
 
     (27) expression_operation -> expression EQUALEQUAL expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -1957,15 +2225,15 @@ state 58
     RPAREN          reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .)
     START           reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .)
     STOP            reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
 
   ! MULTIPLY        [ reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! DIVIDE          [ reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .) ]
@@ -1976,13 +2244,13 @@ state 58
   ! LDEQ            [ reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! GD              [ reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .) ]
   ! GDEQ            [ reduce using rule 27 (expression_operation -> expression EQUALEQUAL expression .) ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 59
+state 70
 
     (28) expression_operation -> expression NOTEQ expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -2008,15 +2276,15 @@ state 59
     RPAREN          reduce using rule 28 (expression_operation -> expression NOTEQ expression .)
     START           reduce using rule 28 (expression_operation -> expression NOTEQ expression .)
     STOP            reduce using rule 28 (expression_operation -> expression NOTEQ expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
 
   ! MULTIPLY        [ reduce using rule 28 (expression_operation -> expression NOTEQ expression .) ]
   ! DIVIDE          [ reduce using rule 28 (expression_operation -> expression NOTEQ expression .) ]
@@ -2027,13 +2295,13 @@ state 59
   ! LDEQ            [ reduce using rule 28 (expression_operation -> expression NOTEQ expression .) ]
   ! GD              [ reduce using rule 28 (expression_operation -> expression NOTEQ expression .) ]
   ! GDEQ            [ reduce using rule 28 (expression_operation -> expression NOTEQ expression .) ]
-  ! EQUALEQUAL      [ shift and go to state 35 ]
-  ! NOTEQ           [ shift and go to state 36 ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! EQUALEQUAL      [ shift and go to state 36 ]
+  ! NOTEQ           [ shift and go to state 37 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 60
+state 71
 
     (29) expression_operation -> expression AND expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -2057,17 +2325,17 @@ state 60
     RPAREN          reduce using rule 29 (expression_operation -> expression AND expression .)
     START           reduce using rule 29 (expression_operation -> expression AND expression .)
     STOP            reduce using rule 29 (expression_operation -> expression AND expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
 
   ! MULTIPLY        [ reduce using rule 29 (expression_operation -> expression AND expression .) ]
   ! DIVIDE          [ reduce using rule 29 (expression_operation -> expression AND expression .) ]
@@ -2080,11 +2348,11 @@ state 60
   ! GDEQ            [ reduce using rule 29 (expression_operation -> expression AND expression .) ]
   ! EQUALEQUAL      [ reduce using rule 29 (expression_operation -> expression AND expression .) ]
   ! NOTEQ           [ reduce using rule 29 (expression_operation -> expression AND expression .) ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 61
+state 72
 
     (30) expression_operation -> expression OR expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -2108,17 +2376,17 @@ state 61
     RPAREN          reduce using rule 30 (expression_operation -> expression OR expression .)
     START           reduce using rule 30 (expression_operation -> expression OR expression .)
     STOP            reduce using rule 30 (expression_operation -> expression OR expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
 
   ! MULTIPLY        [ reduce using rule 30 (expression_operation -> expression OR expression .) ]
   ! DIVIDE          [ reduce using rule 30 (expression_operation -> expression OR expression .) ]
@@ -2131,11 +2399,11 @@ state 61
   ! GDEQ            [ reduce using rule 30 (expression_operation -> expression OR expression .) ]
   ! EQUALEQUAL      [ reduce using rule 30 (expression_operation -> expression OR expression .) ]
   ! NOTEQ           [ reduce using rule 30 (expression_operation -> expression OR expression .) ]
-  ! AND             [ shift and go to state 37 ]
-  ! OR              [ shift and go to state 38 ]
+  ! AND             [ shift and go to state 38 ]
+  ! OR              [ shift and go to state 39 ]
 
 
-state 62
+state 73
 
     (16) var_assign -> NAME EQUALS expression .
     (18) expression_operation -> expression . MULTIPLY expression
@@ -2155,67 +2423,226 @@ state 62
     NEWLINE         reduce using rule 16 (var_assign -> NAME EQUALS expression .)
     $end            reduce using rule 16 (var_assign -> NAME EQUALS expression .)
     STOP            reduce using rule 16 (var_assign -> NAME EQUALS expression .)
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 63
+state 74
 
-    (37) expression -> LPAREN expression RPAREN .
+    (37) expression -> LBRACE int_type_array RBRACE .
 
-    MULTIPLY        reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    DIVIDE          reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    MODULO          reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    PLUS            reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    MINUS           reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    LD              reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    LDEQ            reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    GD              reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    GDEQ            reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    EQUALEQUAL      reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    NOTEQ           reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    AND             reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    OR              reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    NEWLINE         reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    $end            reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    RPAREN          reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    START           reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-    STOP            reduce using rule 37 (expression -> LPAREN expression RPAREN .)
-
-
-state 64
-
-    (44) iterative -> WHILE expression START . NEWLINE language STOP
-
-    NEWLINE         shift and go to state 68
+    MULTIPLY        reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    DIVIDE          reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    MODULO          reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    PLUS            reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    MINUS           reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    LD              reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    LDEQ            reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    GD              reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    GDEQ            reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    EQUALEQUAL      reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    NOTEQ           reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    AND             reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    OR              reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    NEWLINE         reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    $end            reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    RPAREN          reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    START           reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
+    STOP            reduce using rule 37 (expression -> LBRACE int_type_array RBRACE .)
 
 
-state 65
+state 75
 
-    (38) conditional -> IF expression START . NEWLINE language STOP else_if_blocks else_block
+    (38) expression -> LBRACE float_type_array RBRACE .
 
-    NEWLINE         shift and go to state 69
+    MULTIPLY        reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    DIVIDE          reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    MODULO          reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    PLUS            reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    MINUS           reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    LD              reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    LDEQ            reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    GD              reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    GDEQ            reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    EQUALEQUAL      reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    NOTEQ           reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    AND             reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    OR              reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    NEWLINE         reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    $end            reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    RPAREN          reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    START           reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
+    STOP            reduce using rule 38 (expression -> LBRACE float_type_array RBRACE .)
 
 
-state 66
+state 76
+
+    (39) expression -> LBRACE string_type_array RBRACE .
+
+    MULTIPLY        reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    DIVIDE          reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    MODULO          reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    PLUS            reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    MINUS           reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    LD              reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    LDEQ            reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    GD              reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    GDEQ            reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    EQUALEQUAL      reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    NOTEQ           reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    AND             reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    OR              reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    NEWLINE         reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    $end            reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    RPAREN          reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    START           reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+    STOP            reduce using rule 39 (expression -> LBRACE string_type_array RBRACE .)
+
+
+state 77
+
+    (40) expression -> LBRACE bool_type_array RBRACE .
+
+    MULTIPLY        reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    DIVIDE          reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    MODULO          reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    PLUS            reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    MINUS           reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    LD              reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    LDEQ            reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    GD              reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    GDEQ            reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    EQUALEQUAL      reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    NOTEQ           reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    AND             reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    OR              reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    NEWLINE         reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    $end            reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    RPAREN          reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    START           reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+    STOP            reduce using rule 40 (expression -> LBRACE bool_type_array RBRACE .)
+
+
+state 78
+
+    (42) int_type_array -> INT int_type_array .
+
+    RBRACE          reduce using rule 42 (int_type_array -> INT int_type_array .)
+
+
+state 79
+
+    (41) int_type_array -> empty .
+
+    RBRACE          reduce using rule 41 (int_type_array -> empty .)
+
+
+state 80
+
+    (44) float_type_array -> FLOAT float_type_array .
+
+    RBRACE          reduce using rule 44 (float_type_array -> FLOAT float_type_array .)
+
+
+state 81
+
+    (43) float_type_array -> empty .
+
+    RBRACE          reduce using rule 43 (float_type_array -> empty .)
+
+
+state 82
+
+    (46) string_type_array -> STRING string_type_array .
+
+    RBRACE          reduce using rule 46 (string_type_array -> STRING string_type_array .)
+
+
+state 83
+
+    (45) string_type_array -> empty .
+
+    RBRACE          reduce using rule 45 (string_type_array -> empty .)
+
+
+state 84
+
+    (48) bool_type_array -> TRUE bool_type_array .
+
+    RBRACE          reduce using rule 48 (bool_type_array -> TRUE bool_type_array .)
+
+
+state 85
+
+    (47) bool_type_array -> empty .
+
+    RBRACE          reduce using rule 47 (bool_type_array -> empty .)
+
+
+state 86
+
+    (49) bool_type_array -> FALSE bool_type_array .
+
+    RBRACE          reduce using rule 49 (bool_type_array -> FALSE bool_type_array .)
+
+
+state 87
+
+    (50) expression -> LPAREN expression RPAREN .
+
+    MULTIPLY        reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    DIVIDE          reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    MODULO          reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    PLUS            reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    MINUS           reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    LD              reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    LDEQ            reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    GD              reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    GDEQ            reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    EQUALEQUAL      reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    NOTEQ           reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    AND             reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    OR              reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    NEWLINE         reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    $end            reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    RPAREN          reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    START           reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+    STOP            reduce using rule 50 (expression -> LPAREN expression RPAREN .)
+
+
+state 88
+
+    (57) iterative -> WHILE expression START . NEWLINE language STOP
+
+    NEWLINE         shift and go to state 92
+
+
+state 89
+
+    (51) conditional -> IF expression START . NEWLINE language STOP else_if_blocks else_block
+
+    NEWLINE         shift and go to state 93
+
+
+state 90
 
     (12) input -> READ LPAREN NAME . RPAREN
 
-    RPAREN          shift and go to state 70
+    RPAREN          shift and go to state 94
 
 
-state 67
+state 91
 
     (14) output_print -> PRINT LPAREN expression . RPAREN
     (18) expression_operation -> expression . MULTIPLY expression
@@ -2232,25 +2659,25 @@ state 67
     (29) expression_operation -> expression . AND expression
     (30) expression_operation -> expression . OR expression
 
-    RPAREN          shift and go to state 71
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    RPAREN          shift and go to state 95
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 68
+state 92
 
-    (44) iterative -> WHILE expression START NEWLINE . language STOP
+    (57) iterative -> WHILE expression START NEWLINE . language STOP
     (3) language -> . language NEWLINE line
     (4) language -> . line
     (5) line -> . expression
@@ -2267,13 +2694,17 @@ state 68
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
-    (45) empty -> .
+    (58) empty -> .
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -2296,30 +2727,31 @@ state 68
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    STOP            reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    STOP            reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
     expression                     shift and go to state 5
-    language                       shift and go to state 72
+    language                       shift and go to state 96
     line                           shift and go to state 4
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
-    empty                          shift and go to state 48
+    empty                          shift and go to state 59
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
-state 69
+state 93
 
-    (38) conditional -> IF expression START NEWLINE . language STOP else_if_blocks else_block
+    (51) conditional -> IF expression START NEWLINE . language STOP else_if_blocks else_block
     (3) language -> . language NEWLINE line
     (4) language -> . line
     (5) line -> . expression
@@ -2336,13 +2768,17 @@ state 69
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
-    (45) empty -> .
+    (58) empty -> .
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -2365,28 +2801,29 @@ state 69
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    STOP            reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    STOP            reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
     expression                     shift and go to state 5
-    language                       shift and go to state 73
+    language                       shift and go to state 97
     line                           shift and go to state 4
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
-    empty                          shift and go to state 48
+    empty                          shift and go to state 59
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
-state 70
+state 94
 
     (12) input -> READ LPAREN NAME RPAREN .
 
@@ -2395,7 +2832,7 @@ state 70
     STOP            reduce using rule 12 (input -> READ LPAREN NAME RPAREN .)
 
 
-state 71
+state 95
 
     (14) output_print -> PRINT LPAREN expression RPAREN .
 
@@ -2404,118 +2841,118 @@ state 71
     STOP            reduce using rule 14 (output_print -> PRINT LPAREN expression RPAREN .)
 
 
-state 72
+state 96
 
-    (44) iterative -> WHILE expression START NEWLINE language . STOP
+    (57) iterative -> WHILE expression START NEWLINE language . STOP
     (3) language -> language . NEWLINE line
 
-    STOP            shift and go to state 74
-    NEWLINE         shift and go to state 25
+    STOP            shift and go to state 98
+    NEWLINE         shift and go to state 26
 
 
-state 73
+state 97
 
-    (38) conditional -> IF expression START NEWLINE language . STOP else_if_blocks else_block
+    (51) conditional -> IF expression START NEWLINE language . STOP else_if_blocks else_block
     (3) language -> language . NEWLINE line
 
-    STOP            shift and go to state 75
-    NEWLINE         shift and go to state 25
+    STOP            shift and go to state 99
+    NEWLINE         shift and go to state 26
 
 
-state 74
+state 98
 
-    (44) iterative -> WHILE expression START NEWLINE language STOP .
+    (57) iterative -> WHILE expression START NEWLINE language STOP .
 
-    NEWLINE         reduce using rule 44 (iterative -> WHILE expression START NEWLINE language STOP .)
-    $end            reduce using rule 44 (iterative -> WHILE expression START NEWLINE language STOP .)
-    STOP            reduce using rule 44 (iterative -> WHILE expression START NEWLINE language STOP .)
-
-
-state 75
-
-    (38) conditional -> IF expression START NEWLINE language STOP . else_if_blocks else_block
-    (39) else_if_blocks -> . empty
-    (40) else_if_blocks -> . else_if_blocks else_if_block
-    (45) empty -> .
-
-    ELSE            reduce using rule 45 (empty -> .)
-    ELSE_IF         reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
-    $end            reduce using rule 45 (empty -> .)
-    STOP            reduce using rule 45 (empty -> .)
-
-    else_if_blocks                 shift and go to state 76
-    empty                          shift and go to state 77
-
-state 76
-
-    (38) conditional -> IF expression START NEWLINE language STOP else_if_blocks . else_block
-    (40) else_if_blocks -> else_if_blocks . else_if_block
-    (42) else_block -> . ELSE START NEWLINE language STOP
-    (43) else_block -> . empty
-    (41) else_if_block -> . ELSE_IF expression START NEWLINE language STOP
-    (45) empty -> .
-
-    ELSE            shift and go to state 80
-    ELSE_IF         shift and go to state 82
-    NEWLINE         reduce using rule 45 (empty -> .)
-    $end            reduce using rule 45 (empty -> .)
-    STOP            reduce using rule 45 (empty -> .)
-
-    else_block                     shift and go to state 78
-    else_if_block                  shift and go to state 79
-    empty                          shift and go to state 81
-
-state 77
-
-    (39) else_if_blocks -> empty .
-
-    ELSE            reduce using rule 39 (else_if_blocks -> empty .)
-    ELSE_IF         reduce using rule 39 (else_if_blocks -> empty .)
-    NEWLINE         reduce using rule 39 (else_if_blocks -> empty .)
-    $end            reduce using rule 39 (else_if_blocks -> empty .)
-    STOP            reduce using rule 39 (else_if_blocks -> empty .)
+    NEWLINE         reduce using rule 57 (iterative -> WHILE expression START NEWLINE language STOP .)
+    $end            reduce using rule 57 (iterative -> WHILE expression START NEWLINE language STOP .)
+    STOP            reduce using rule 57 (iterative -> WHILE expression START NEWLINE language STOP .)
 
 
-state 78
+state 99
 
-    (38) conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .
+    (51) conditional -> IF expression START NEWLINE language STOP . else_if_blocks else_block
+    (52) else_if_blocks -> . empty
+    (53) else_if_blocks -> . else_if_blocks else_if_block
+    (58) empty -> .
 
-    NEWLINE         reduce using rule 38 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
-    $end            reduce using rule 38 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
-    STOP            reduce using rule 38 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
+    ELSE            reduce using rule 58 (empty -> .)
+    ELSE_IF         reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
+    $end            reduce using rule 58 (empty -> .)
+    STOP            reduce using rule 58 (empty -> .)
+
+    else_if_blocks                 shift and go to state 100
+    empty                          shift and go to state 101
+
+state 100
+
+    (51) conditional -> IF expression START NEWLINE language STOP else_if_blocks . else_block
+    (53) else_if_blocks -> else_if_blocks . else_if_block
+    (55) else_block -> . ELSE START NEWLINE language STOP
+    (56) else_block -> . empty
+    (54) else_if_block -> . ELSE_IF expression START NEWLINE language STOP
+    (58) empty -> .
+
+    ELSE            shift and go to state 104
+    ELSE_IF         shift and go to state 106
+    NEWLINE         reduce using rule 58 (empty -> .)
+    $end            reduce using rule 58 (empty -> .)
+    STOP            reduce using rule 58 (empty -> .)
+
+    else_block                     shift and go to state 102
+    else_if_block                  shift and go to state 103
+    empty                          shift and go to state 105
+
+state 101
+
+    (52) else_if_blocks -> empty .
+
+    ELSE            reduce using rule 52 (else_if_blocks -> empty .)
+    ELSE_IF         reduce using rule 52 (else_if_blocks -> empty .)
+    NEWLINE         reduce using rule 52 (else_if_blocks -> empty .)
+    $end            reduce using rule 52 (else_if_blocks -> empty .)
+    STOP            reduce using rule 52 (else_if_blocks -> empty .)
 
 
-state 79
+state 102
 
-    (40) else_if_blocks -> else_if_blocks else_if_block .
+    (51) conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .
 
-    ELSE            reduce using rule 40 (else_if_blocks -> else_if_blocks else_if_block .)
-    ELSE_IF         reduce using rule 40 (else_if_blocks -> else_if_blocks else_if_block .)
-    NEWLINE         reduce using rule 40 (else_if_blocks -> else_if_blocks else_if_block .)
-    $end            reduce using rule 40 (else_if_blocks -> else_if_blocks else_if_block .)
-    STOP            reduce using rule 40 (else_if_blocks -> else_if_blocks else_if_block .)
+    NEWLINE         reduce using rule 51 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
+    $end            reduce using rule 51 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
+    STOP            reduce using rule 51 (conditional -> IF expression START NEWLINE language STOP else_if_blocks else_block .)
 
 
-state 80
+state 103
 
-    (42) else_block -> ELSE . START NEWLINE language STOP
+    (53) else_if_blocks -> else_if_blocks else_if_block .
 
-    START           shift and go to state 83
-
-
-state 81
-
-    (43) else_block -> empty .
-
-    NEWLINE         reduce using rule 43 (else_block -> empty .)
-    $end            reduce using rule 43 (else_block -> empty .)
-    STOP            reduce using rule 43 (else_block -> empty .)
+    ELSE            reduce using rule 53 (else_if_blocks -> else_if_blocks else_if_block .)
+    ELSE_IF         reduce using rule 53 (else_if_blocks -> else_if_blocks else_if_block .)
+    NEWLINE         reduce using rule 53 (else_if_blocks -> else_if_blocks else_if_block .)
+    $end            reduce using rule 53 (else_if_blocks -> else_if_blocks else_if_block .)
+    STOP            reduce using rule 53 (else_if_blocks -> else_if_blocks else_if_block .)
 
 
-state 82
+state 104
 
-    (41) else_if_block -> ELSE_IF . expression START NEWLINE language STOP
+    (55) else_block -> ELSE . START NEWLINE language STOP
+
+    START           shift and go to state 107
+
+
+state 105
+
+    (56) else_block -> empty .
+
+    NEWLINE         reduce using rule 56 (else_block -> empty .)
+    $end            reduce using rule 56 (else_block -> empty .)
+    STOP            reduce using rule 56 (else_block -> empty .)
+
+
+state 106
+
+    (54) else_if_block -> ELSE_IF . expression START NEWLINE language STOP
     (15) expression -> . NAME
     (17) expression -> . expression_operation
     (32) expression -> . INT
@@ -2523,7 +2960,11 @@ state 82
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -2539,28 +2980,29 @@ state 82
     (30) expression_operation -> . expression OR expression
     (31) expression_operation -> . NOT expression
 
-    NAME            shift and go to state 41
+    NAME            shift and go to state 52
     INT             shift and go to state 13
     FLOAT           shift and go to state 14
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    NOT             shift and go to state 23
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    NOT             shift and go to state 24
 
-    expression                     shift and go to state 84
+    expression                     shift and go to state 108
     expression_operation           shift and go to state 12
 
-state 83
+state 107
 
-    (42) else_block -> ELSE START . NEWLINE language STOP
+    (55) else_block -> ELSE START . NEWLINE language STOP
 
-    NEWLINE         shift and go to state 85
+    NEWLINE         shift and go to state 109
 
 
-state 84
+state 108
 
-    (41) else_if_block -> ELSE_IF expression . START NEWLINE language STOP
+    (54) else_if_block -> ELSE_IF expression . START NEWLINE language STOP
     (18) expression_operation -> expression . MULTIPLY expression
     (19) expression_operation -> expression . DIVIDE expression
     (20) expression_operation -> expression . MODULO expression
@@ -2575,25 +3017,25 @@ state 84
     (29) expression_operation -> expression . AND expression
     (30) expression_operation -> expression . OR expression
 
-    START           shift and go to state 86
-    MULTIPLY        shift and go to state 26
-    DIVIDE          shift and go to state 27
-    MODULO          shift and go to state 28
-    PLUS            shift and go to state 29
-    MINUS           shift and go to state 30
-    LD              shift and go to state 31
-    LDEQ            shift and go to state 32
-    GD              shift and go to state 33
-    GDEQ            shift and go to state 34
-    EQUALEQUAL      shift and go to state 35
-    NOTEQ           shift and go to state 36
-    AND             shift and go to state 37
-    OR              shift and go to state 38
+    START           shift and go to state 110
+    MULTIPLY        shift and go to state 27
+    DIVIDE          shift and go to state 28
+    MODULO          shift and go to state 29
+    PLUS            shift and go to state 30
+    MINUS           shift and go to state 31
+    LD              shift and go to state 32
+    LDEQ            shift and go to state 33
+    GD              shift and go to state 34
+    GDEQ            shift and go to state 35
+    EQUALEQUAL      shift and go to state 36
+    NOTEQ           shift and go to state 37
+    AND             shift and go to state 38
+    OR              shift and go to state 39
 
 
-state 85
+state 109
 
-    (42) else_block -> ELSE START NEWLINE . language STOP
+    (55) else_block -> ELSE START NEWLINE . language STOP
     (3) language -> . language NEWLINE line
     (4) language -> . line
     (5) line -> . expression
@@ -2610,13 +3052,17 @@ state 85
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
-    (45) empty -> .
+    (58) empty -> .
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -2639,16 +3085,17 @@ state 85
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    STOP            reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    STOP            reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
-    language                       shift and go to state 87
+    language                       shift and go to state 111
     line                           shift and go to state 4
     expression                     shift and go to state 5
     var_assign                     shift and go to state 6
@@ -2656,29 +3103,29 @@ state 85
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
-    empty                          shift and go to state 48
+    empty                          shift and go to state 59
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
-state 86
+state 110
 
-    (41) else_if_block -> ELSE_IF expression START . NEWLINE language STOP
+    (54) else_if_block -> ELSE_IF expression START . NEWLINE language STOP
 
-    NEWLINE         shift and go to state 88
+    NEWLINE         shift and go to state 112
 
 
-state 87
+state 111
 
-    (42) else_block -> ELSE START NEWLINE language . STOP
+    (55) else_block -> ELSE START NEWLINE language . STOP
     (3) language -> language . NEWLINE line
 
-    STOP            shift and go to state 89
-    NEWLINE         shift and go to state 25
+    STOP            shift and go to state 113
+    NEWLINE         shift and go to state 26
 
 
-state 88
+state 112
 
-    (41) else_if_block -> ELSE_IF expression START NEWLINE . language STOP
+    (54) else_if_block -> ELSE_IF expression START NEWLINE . language STOP
     (3) language -> . language NEWLINE line
     (4) language -> . line
     (5) line -> . expression
@@ -2695,13 +3142,17 @@ state 88
     (34) expression -> . STRING
     (35) expression -> . TRUE
     (36) expression -> . FALSE
-    (37) expression -> . LPAREN expression RPAREN
+    (37) expression -> . LBRACE int_type_array RBRACE
+    (38) expression -> . LBRACE float_type_array RBRACE
+    (39) expression -> . LBRACE string_type_array RBRACE
+    (40) expression -> . LBRACE bool_type_array RBRACE
+    (50) expression -> . LPAREN expression RPAREN
     (16) var_assign -> . NAME EQUALS expression
-    (44) iterative -> . WHILE expression START NEWLINE language STOP
-    (38) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
+    (57) iterative -> . WHILE expression START NEWLINE language STOP
+    (51) conditional -> . IF expression START NEWLINE language STOP else_if_blocks else_block
     (13) output -> . output_print
     (12) input -> . READ LPAREN NAME RPAREN
-    (45) empty -> .
+    (58) empty -> .
     (18) expression_operation -> . expression MULTIPLY expression
     (19) expression_operation -> . expression DIVIDE expression
     (20) expression_operation -> . expression MODULO expression
@@ -2724,57 +3175,64 @@ state 88
     STRING          shift and go to state 15
     TRUE            shift and go to state 16
     FALSE           shift and go to state 17
-    LPAREN          shift and go to state 18
-    WHILE           shift and go to state 19
-    IF              shift and go to state 20
-    READ            shift and go to state 22
-    STOP            reduce using rule 45 (empty -> .)
-    NEWLINE         reduce using rule 45 (empty -> .)
-    NOT             shift and go to state 23
-    PRINT           shift and go to state 24
+    LBRACE          shift and go to state 18
+    LPAREN          shift and go to state 19
+    WHILE           shift and go to state 20
+    IF              shift and go to state 21
+    READ            shift and go to state 23
+    STOP            reduce using rule 58 (empty -> .)
+    NEWLINE         reduce using rule 58 (empty -> .)
+    NOT             shift and go to state 24
+    PRINT           shift and go to state 25
 
     expression                     shift and go to state 5
-    language                       shift and go to state 90
+    language                       shift and go to state 114
     line                           shift and go to state 4
     var_assign                     shift and go to state 6
     iterative                      shift and go to state 7
     conditional                    shift and go to state 8
     output                         shift and go to state 9
     input                          shift and go to state 10
-    empty                          shift and go to state 48
+    empty                          shift and go to state 59
     expression_operation           shift and go to state 12
-    output_print                   shift and go to state 21
+    output_print                   shift and go to state 22
 
-state 89
+state 113
 
-    (42) else_block -> ELSE START NEWLINE language STOP .
+    (55) else_block -> ELSE START NEWLINE language STOP .
 
-    NEWLINE         reduce using rule 42 (else_block -> ELSE START NEWLINE language STOP .)
-    $end            reduce using rule 42 (else_block -> ELSE START NEWLINE language STOP .)
-    STOP            reduce using rule 42 (else_block -> ELSE START NEWLINE language STOP .)
+    NEWLINE         reduce using rule 55 (else_block -> ELSE START NEWLINE language STOP .)
+    $end            reduce using rule 55 (else_block -> ELSE START NEWLINE language STOP .)
+    STOP            reduce using rule 55 (else_block -> ELSE START NEWLINE language STOP .)
 
 
-state 90
+state 114
 
-    (41) else_if_block -> ELSE_IF expression START NEWLINE language . STOP
+    (54) else_if_block -> ELSE_IF expression START NEWLINE language . STOP
     (3) language -> language . NEWLINE line
 
-    STOP            shift and go to state 91
-    NEWLINE         shift and go to state 25
+    STOP            shift and go to state 115
+    NEWLINE         shift and go to state 26
 
 
-state 91
+state 115
 
-    (41) else_if_block -> ELSE_IF expression START NEWLINE language STOP .
+    (54) else_if_block -> ELSE_IF expression START NEWLINE language STOP .
 
-    ELSE            reduce using rule 41 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
-    ELSE_IF         reduce using rule 41 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
-    NEWLINE         reduce using rule 41 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
-    $end            reduce using rule 41 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
-    STOP            reduce using rule 41 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
+    ELSE            reduce using rule 54 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
+    ELSE_IF         reduce using rule 54 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
+    NEWLINE         reduce using rule 54 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
+    $end            reduce using rule 54 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
+    STOP            reduce using rule 54 (else_if_block -> ELSE_IF expression START NEWLINE language STOP .)
 
 WARNING: 
 WARNING: Conflicts:
 WARNING: 
 WARNING: reduce/reduce conflict in state 3 resolved using rule (start -> empty)
 WARNING: rejected rule (line -> empty) in state 3
+WARNING: reduce/reduce conflict in state 45 resolved using rule (int_type_array -> empty)
+WARNING: rejected rule (float_type_array -> empty) in state 45
+WARNING: reduce/reduce conflict in state 45 resolved using rule (int_type_array -> empty)
+WARNING: rejected rule (string_type_array -> empty) in state 45
+WARNING: reduce/reduce conflict in state 45 resolved using rule (int_type_array -> empty)
+WARNING: rejected rule (bool_type_array -> empty) in state 45
