@@ -16,6 +16,12 @@ reserved = {
     'else'      : 'ELSE',
     'then'      : 'THEN',
     'while'     : 'WHILE',
+
+    'int'       : 'INT_TYPE',
+    'float'     : 'FLOAT_TYPE',
+    'string'    : 'STRING_TYPE',
+    'void'      : 'VOID_TYPE',
+    'return'    : 'RETURN',
     # 'stop'      : 'STOP',
 
     'print'     : 'PRINT',
@@ -33,7 +39,8 @@ tokens = [
     'IF', 'ELSE_IF', 'ELSE', 'WHILE', 
     'START', 'STOP', 
     'PRINT', 'READ',
-    'NEWLINE'      
+    'NEWLINE',
+    'INT_TYPE','FLOAT_TYPE','STRING_TYPE','VOID_TYPE','COMMA','RETURN'      
 ]
 
 
@@ -42,6 +49,7 @@ t_EQUALEQUAL    =   r'\=\='
 t_LDEQ          =   r'\<\='
 t_NOTEQ         =   r'\!\='
 
+t_COMMA         =   r'\,'
 t_START         =   r'\{'
 t_STOP          =   r'\}'
 t_LPAREN        =   r'\('
@@ -157,6 +165,7 @@ def p_line(p):
     '''
     line : expression
          | var_assign
+         | func_assign
          | iterative
          | conditional
          | output
@@ -167,6 +176,63 @@ def p_line(p):
     print("LINE:",p[0])
 
 #grammar for reading
+
+def p_func_assign(p):
+    '''
+    func_assign     :   datatype NAME LPAREN parameters RPAREN START NEWLINE language return_stmt STOP
+    ''' 
+    p[0] = ('FUNCTION', p[1], p[2], p[4], p[8], p[9])
+    print("FUNCTION:",p[0])
+
+
+def p_return_stmt(p):
+    '''
+    return_stmt     :   RETURN expression NEWLINE
+                    |   RETURN NEWLINE
+                    |   empty
+
+    '''
+    if len(p) == 4:
+        p[0] = ('RETURN', p[1], p[2])
+    else:
+        p[0] = ('RETURN', p[1])
+    
+
+    print("RETURN STMT:", p[0])
+
+def p_parameters(p):
+    '''
+
+    parameters      :   first_param
+                    |   empty
+    '''
+
+    p[0] = p[1]
+    print("PARAMETERS:",p[0])
+
+def p_first_param(p):
+    '''
+    first_param     :   datatype NAME COMMA first_param
+                    |   datatype NAME
+
+    '''
+    
+    if len(p) == 5:
+        p[0] = (p[1], p[2], p[4])
+    else:
+        p[0] = (p[1], p[2])
+    print("FIRST PARAM:",p[0]) 
+
+def p_datatype(p):
+    '''
+
+    datatype    :   INT_TYPE
+                |   FLOAT_TYPE
+                |   STRING_TYPE
+                |   VOID_TYPE
+    '''
+    p[0] = p[1]
+    print("DATATYPE:", p[0])
 
 def p_input(p):
     '''

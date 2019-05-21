@@ -1,10 +1,11 @@
-while (true) {
-
-    while (true) {
-        if (true) {
-            a = 10 + 5
-            print(a)
-        }
+int func(int x, int y, string z, float haha) {
+    x = 0
+    while (x < 0) {
+        print("hi")
+        x = x + 1
     }
-    print(a)
+    return x
+}
+
+void wahoo() {
 }
