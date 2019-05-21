@@ -4,6 +4,15 @@ from sys import *
 
 fo = open("fileout.owo", "w")
 
+c_file = list()
+
+libraries = ("\n".join(["#include <stdio.h>", "#include <string.h>", "#include <stdbool.h>", "#include <math.h>", "#include <stdlib.h>","\n\n\n\n"]))
+c_file.append(libraries)
+
+functions = str()
+main = "int main() {"
+c_file.append(main)
+
 reserved = {
     
     'Tutuwu'    : 'TRUE',
@@ -74,7 +83,7 @@ def t_NEWLINE(t):
     return t;
 
 def t_COMMENT(t):
-    r'\#.*\n+'
+    r'\#.*\n+|\#.*'
     pass        #no return value, token discarded
 
 def t_FLOAT(t):
@@ -129,12 +138,25 @@ def p_start(p):
           | empty
     '''
     print("START")
+
+
     p[0] = p[1]
+
+    print("\n\n\n\n")
+
+    result = run(p[0])
+    print(result)
+
+    c_file.append(result)
+    c_file.append("}\n")
     if p[0] != None:
         print()
         print()
         print(p[0])
-        fo.write(str(p[0]))
+
+        for i in c_file:
+            fo.write(i + '\n')
+        # fo.write(str(p[0]))
         fo.close()
 
 
@@ -241,7 +263,7 @@ def p_input(p):
     input : READ LPAREN NAME RPAREN
     '''
 
-    p[0] = ('READ',p[3])
+    p[0] = (p[1],p[3])
     print("INPUT:",p[0])
 
 #grammar for printing
@@ -261,7 +283,7 @@ def p_output_print(p):
     output_print : PRINT LPAREN expression RPAREN
     '''
 
-    p[0] = ('PRINT', p[3])
+    p[0] = (p[1], p[3])
     print("OUTPUT PRINT:",p[0])
 
 #grammar for assigning values
@@ -277,9 +299,15 @@ def p_expression_var_assign(p):
 
 def p_var_assign(p):
     '''
-    var_assign : NAME EQUALS expression
+    var_assign : datatype NAME EQUALS expression
+               | NAME EQUALS expression
     '''
-    p[0] = ('=', p[1], p[3])
+    if len(p) == 5:
+        p[0] = (p[3], p[2], p[4], p[1])
+    else:
+        p[0] = (p[2], p[1], p[3])
+
+
     print("VAR ASSIGN:",p[0])
 
 #grammar for deciding operators
@@ -484,58 +512,6 @@ def p_iterative(p):
     print("ITERATIVE:", p[0])
 
 
-#-------------------------------------------------#
-
-# def p_calc(p):
-#     '''
-#     calc    : expression
-#             | var_assign
-#             | empty
-
-#     '''
-
-#     res = run(p[1])
-#     if res != None:
-#         print(res)
-#     # print(run(p[1]))
-
-# def p_var_assign(p):
-#     '''
-
-#     var_assign    :   NAME EQUALS expression
-#     '''
-
-#     p[0] = ('=', p[1], p[3])
-
-# def p_expression(p):
-#     '''
-#     expression  :   expression MULTIPLY expression
-#                 |   expression DIVIDE expression
-#                 |   expression PLUS expression
-#                 |   expression MINUS expression
-#                 |   expression MODULO expression
-#     '''
-
-#     p[0] = (p[2], p[1], p[3])
-
-# def p_expression_int_float(p):
-#     '''
-#     expression  :   INT
-#                 |   FLOAT
-#     '''
-#     p[0] = p[1]
-
-# def p_expression_bool(p):
-#     '''
-#     expression  :   BOOL
-#     '''
-#     p[0] = ('bool', p[1])
-
-# def p_expression_var(p):
-#     '''
-#     expression  :   NAME
-#     '''
-#     p[0] = ('var', p[1])
 
 
 def p_error(p):
@@ -556,80 +532,121 @@ def run(p):
     global env
     
     if type(p) == tuple:
-        if p[0] == '+':
-            return run(p[1]) + run(p[2])
+        if p[0] == '+w+':
+            return str(run(p[1])) + " + " + str(run(p[2]))
 
-        elif p[0] == '-':
-            return run(p[1]) - run(p[2])
+        elif p[0] == '-w-':
+            return str(run(p[1])) + " - " + str(run(p[2]))
 
-        elif p[0] == '*':
-            return run(p[1]) * run(p[2])
+        elif p[0] == '*w*':
+            return str(run(p[1])) + " * " + str(run(p[2]))
 
-        elif p[0] == '/':
-            return run(p[1]) / run(p[2])
+        elif p[0] == '\\w/':
+            return str(run(p[1])) + " / " + str(run(p[2]))
 
-        elif p[0] == '=':
-            env[p[1]] = run(p[2])
-            return env[p[1]]
+        elif p[0] == 'ish':
+            # (ish, name, value, datatype)
+            if len(p) == 5 and p[1] not in env:
+                print("Undeclared Variable Found! - ", p[1])
+                return
+            temp = str(run(p[2]))
+            if p[1] in env:
+                stmt = p[1] + " = " + temp + ";" 
+                return stmt
+
+            if p[3] == 'void':
+                print("Cannot assign variable as void")
+                return
+            env[p[1]] = p[3] 
+            # print("test: ", p[1], env[p[1]])
+            stmt = p[3] + " " + p[1] + " = " + temp + ";"
+            return stmt
 
         elif p[0] == 'var':
             if p[1] not in env:
                  print('Undeclared variable found! - ', p[1])               
                  return
             else:
-                 return env[p[1]]
-            return env[p[1]]
+                 return p[1]
 
-        elif p[0] == '%':
-            return run(p[1]) % run(p[2])
+            # return env[p[1]]
 
-        elif p[0] == '<':
-            return run(p[1]) < run(p[2])
+        elif p[0] == '%%w%%':
+            return str(run(p[1])) + " % " + str(run(p[2]))
 
-        elif p[0] == '<=':
-            return run(p[1]) <= run(p[2])
+        elif p[0] == '<w<':
+            return str(run(p[1])) + " < " + str(run(p[2]))
 
-        elif p[0] == '>':
-            return run(p[1]) > run(p[2])
+        elif p[0] == '=w<':
+            return str(run(p[1])) + " <= " + str(run(p[2]))
 
-        elif p[0] == '>=':
-            return run(p[1]) >= run(p[2])
+        elif p[0] == '>w>':
+            return str(run(p[1])) + " > " +  str(run(p[2]))
 
-        elif p[0] == '==':
-            return run(p[1]) == run(p[2])
+        elif p[0] == '>w=':
+            return str(run(p[1])) + " >= " + str(run(p[2]))
 
-        elif p[0] == '!=':
-            return run(p[1]) != run(p[2])
+        elif p[0] == '=w=':
+            return str(run(p[1])) + " == " + str(run(p[2]))
+
+        elif p[0] == '>w<':
+            return str(run(p[1])) + " != " + str(run(p[2]))
 
         elif p[0] == 'and':
-            return run(p[1]) and run(p[2])
+            return str(run(p[1])) + " and " + str(run(p[2]))
 
         elif p[0] == 'or':
-            return run(p[1]) or run(p[2])
+            return str(run(p[1])) + " or " + str(run(p[2]))
 
         elif p[0] == 'not':
-            return not run(p[1])
+            return "!" +  str(run(p[1]))
+
+        elif p[0] == "LANGUAGE":
+            return str(run(p[1]))
 
         elif p[0] == 'MULTILINES':
-            run(p[1])
-            run(p[2])
+            a = str(run(p[1]))
+            b = str(run(p[2]))
+
+            return a + "\n" + b
 
         elif p[0] == 'IF':
-            if run(p[1]) != 0:
-                run(p[2])
+            if str(run(p[1])) != 0:
+                return str(run(p[2]))
 
         elif p[0] == 'IFELSE':
-            if run(p[1]) != 0:
-                run(p[2])
+            if str(run(p[1])) != 0:
+                return str(run(p[2]))
             else:
-                run(p[3])
+                return str(run(p[3]))
 
         elif p[0] == 'WHILE':
-            while run(p[1]) != 0:
-                run(p[2])
+            # while str(run(p[1])) != 0:
+            #     return str(run(p[2]))
+            # (WHILE, CONDITION, BODY)
 
-        elif p[0] == 'PRINT':
-            print(run(p[1]))
+            condition = str(run(p[1]))
+            body = str(run(p[2]))
+
+            stmt = "while (%s) {\n%s\n}\n" % (condition, body)
+            return stmt
+
+        elif p[0] == 'pwint':
+            # (READ, name)
+            a = str(run(p[1]))
+
+            if a not in env:
+                print('Undeclared variable found! - ', a)               
+                return
+
+            if env[a] == 'int':
+                stmt = "printf(\"%%d\\n\", %s);" % (a)
+            elif env[a] == 'str':
+                stmt = "printf(\"%%s\\n\", %s);" % (a)
+            elif env[a] == 'float':
+                stmt = "printf(\"%%f\\n\", %s);" % (a)
+
+            return stmt
 
         elif p[0] == 'READ':
             env[p[1]] = input()
@@ -651,7 +668,7 @@ def run(p):
 
     #     ### Assign Value to Variable ###
     #     if p[0] == '=':
-    #         env[p[1]] = run(p[2])
+    #         env[p[1]] = str(run(p[2]))
     #         return
 
 
@@ -709,3 +726,4 @@ elif len(argv) == 2:
         except EOFError:
             break
         parser.parse(s)
+

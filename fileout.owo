@@ -1,1 +1,19 @@
-('LANGUAGE', ('FUNCTION', 'int', 'func', ('int', 'x', ('int', 'y', ('string', 'z', ('float', 'haha')))), ('LANGUAGE', ('MULTILINES', ('=', 'x', 0), ('WHILE', ('<w<', ('var', 'x'), 0), ('LANGUAGE', ('MULTILINES', ('PRINT', 'hi'), ('=', 'x', ('+w+', ('var', 'x'), 1))))))), ('RETURN', 'return', ('var', 'x'))))
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
+#include <stdlib.h>
+
+
+
+
+
+int main() {
+int i = 0;
+while (i < 10) {
+printf("%d\n", i);
+i = i + 1;
+}
+
+}
+
