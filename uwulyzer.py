@@ -210,6 +210,7 @@ def p_line(p):
          | func_assign
          | iterative
          | conditional
+         | func_call
          | output
          | input
          | empty
@@ -217,6 +218,23 @@ def p_line(p):
     p[0] = ('LINE', p[1])
 
 #grammar for reading
+
+def p_func_call(p):
+    '''
+    func_call : NAME LPAREN pars RPAREN
+    '''
+    p[0] = ('FUNC_CALL', p[1], p[3])
+
+def p_pars(p):
+    '''
+    pars : expression
+         | expression COMMA expression
+    '''
+
+    if len(p) == 2:
+        p[0] = ('PARS', p[1], None)
+    else:
+        p[0] = ('PARS', p[1], p[3])        
 
 def p_func_assign(p):
     '''
@@ -576,6 +594,25 @@ def run(p):
                 return " "
 
             return str(run(p[1]))
+
+        if p[0] == 'FUNC_CALL':
+            func_name = p[1]
+            if func_name not in func_env:
+                print("Undeclared function ;w; - ", func_name)
+                return ""
+            params = run(p[2])
+            params = ",".join(params)
+
+            return func_name + "(" + params + ");\n"
+
+
+        if p[0] == 'PARS':
+            head = str(run(p[1]))
+            tail = p[2]
+            if tail == None:
+                tail = []
+
+            return [head] + tail
 
         if p[0] == 'FUNCTION':
             datatype = dtype[p[1]]
