@@ -826,6 +826,10 @@ def run(p):
 
         
     else:
+        if p == "Tutuwu":
+            return 1
+        if p == "UnU":
+            return 0
         return p
 
 
