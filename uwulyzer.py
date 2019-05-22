@@ -49,7 +49,7 @@ op = {
     '-w-'   : '-',
     '*w*'   : '*',
     '\\w/'  : '/',
-    '%%w%%' : '%',
+    '%w%' : '%',
     '=w='   : '==',
     '>w<'   : '!=',
     '<w<'   : '<',
@@ -122,7 +122,7 @@ def t_NAME(t):
     return t
 
 def t_error(t):
-    print("Illegal character - %d" % t.value[0])
+    print("Illegal character")
     t.lexer.skip(1)
 
 lexer = lex.lex()
@@ -409,6 +409,13 @@ def p_str(p):
 def p_str_datatype(p):
     '''
     str     : STRING
+    '''
+    p[0] = ('STRING', p[1])
+
+def p_read_datatype(p):
+    '''
+
+    str     : READ
     '''
     p[0] = ('STRING', p[1])
 

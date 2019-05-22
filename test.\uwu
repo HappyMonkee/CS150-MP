@@ -1,0 +1,12 @@
+#leap year
+
+int year1 ish read
+int yar2 ish read
+
+wiw year1 =w< year2 {.w.}/
+	if year1 %w% 4 ish 0 {.w.}/
+		pwint year1
+	\{.w.}
+	year1 is year1 + 1
+\{.w.}
+

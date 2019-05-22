@@ -1,0 +1,12 @@
+int year ish 0
+int yar ish 0
+read ( year )
+read ( yar )
+
+wiw year =w< yar {.w.}/
+    lyk year %w% 4 =w= 0 {.w.}/
+        pwint ( year )
+    \{.w.}
+    year ish year +w+ 1
+\{.w.}
+
