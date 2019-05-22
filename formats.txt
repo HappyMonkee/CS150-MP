@@ -1,0 +1,63 @@
+LANGUAGE
+('LANGUAGE', line)
+
+MULTILINES
+('MULTIELINES', language, line)
+
+LINE
+('LINE', action)
+
+FUNCTION
+('FUNCTION', datatype, name, parameters, language, return)
+
+
+RETURN
+('RETURN', expression)
+('RETURN', void)
+
+
+PARAMETERS
+('PARAMETERS', list_of_parameters)
+
+
+FIRST_PARAM
+('FIRST_PARAM', datatype, name, others)
+
+INPUT
+('READ', name)
+
+OUTPUT
+('PRINT', expression)
+
+ARRAY
+('ARRAY', elements)
+
+ELEMENTS
+('ELEMENTS', head, tail)
+
+PARENTHESIS
+('PAREN', expression)
+
+IF
+('IF', condition, body, elseif, else)
+
+ELSEIF
+('ELSEIF', condition, body)
+
+MULTIELSEIF
+('MULTIELSEIF', elseif_block, elseif_blocks)
+
+ELSE
+('ELSE', body)
+
+WHILE 
+('WHILE', condition, body)
+
+MATH_EXP
+('MATH_EXP', op, val1, val2)
+
+ASSIGN
+('ASSIGN', datatype, name, expression)
+
+RENAME
+('RENAME', name, expression)

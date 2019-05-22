@@ -2,16 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 from sys import *
 
-fo = open("fileout.owo", "w")
 
-c_file = list()
-
-libraries = ("\n".join(["#include <stdio.h>", "#include <string.h>", "#include <stdbool.h>", "#include <math.h>", "#include <stdlib.h>","\n\n\n\n"]))
-c_file.append(libraries)
-
-functions = str()
-main = "int main() {"
-c_file.append(main)
 
 reserved = {
     
@@ -52,6 +43,23 @@ tokens = [
     'INT_TYPE','FLOAT_TYPE','STRING_TYPE','VOID_TYPE','COMMA','RETURN'      
 ]
 
+
+op = {
+    '+w+'   : '+',
+    '-w-'   : '-',
+    '*w*'   : '*',
+    '\\w/'  : '/',
+    '%%w%%' : '%',
+    '=w='   : '==',
+    '>w<'   : '!=',
+    '<w<'   : '<',
+    '=w<'   : '<=',
+    '>w='   : '>=',
+    '>w>'   : '>',
+    'and'   : 'and',
+    'or'    : 'or',
+    'not'   : '!'
+}
 
 t_START         =   r'\{\.\w\.\}\/'
 t_STOP          =   r'\\\{\.\w\.\}'
@@ -114,7 +122,7 @@ def t_NAME(t):
     return t
 
 def t_error(t):
-    print("Illegal characters!", t)
+    print("Illegal character - %d" % t.value[0])
     t.lexer.skip(1)
 
 lexer = lex.lex()
@@ -131,13 +139,14 @@ precedence = (
 )
 
 #start of grammar
+functions = list()
 
 def p_start(p):
     '''
     start : language
           | empty
     '''
-    print("START")
+    global functions
 
 
     p[0] = p[1]
@@ -145,19 +154,34 @@ def p_start(p):
     print("\n\n\n\n")
 
     result = run(p[0])
-    print(result)
+    # result = " "
 
+    # print(p[0])
+    # if p[0] != None:
+    #     print()
+    #     print()
+    #     print(p[0])
+
+    #     for i in c_file:
+    #         fo.write(i + '\n')
+    #     # fo.write(str(p[0]))
+    fo = open("fileout.c", "w")
+
+    c_file = list()
+
+    libraries = ("\n".join(["#include <stdio.h>", "#include <string.h>", "#include <stdbool.h>", "#include <math.h>", "#include <stdlib.h>","\n\n\n\n"]))
+    c_file.append(libraries)
+    c_file.append("\n".join(functions))
+    main = "int main() {"
+    c_file.append(main)
     c_file.append(result)
-    c_file.append("}\n")
-    if p[0] != None:
-        print()
-        print()
-        print(p[0])
+    c_file.append("\nreturn 0;\n}\n")
 
-        for i in c_file:
-            fo.write(i + '\n')
-        # fo.write(str(p[0]))
-        fo.close()
+    for i in c_file:
+        fo.write(i)
+    print("\n".join(c_file))
+    fo.close()
+    #     fo.close()
 
 
 #grammar for multiple lines
@@ -171,17 +195,11 @@ def p_language(p):
 
         if p[3] != None:
             p[0] = ('MULTILINES', p[1], p[3])
-            print("LANGUAGE MULTILINES:",p[0])
         else:
             p[0] = ('LANGUAGE', p[1])
-            print("LANGUAGE:", p[0])
-    # elif len(p) == 3:
-    #     p[0] = ('MULTILINES', p[1])
-    #     print("LANGUAGE MULTILINES:",p[0])
 
     else:
         p[0] = p[1]
-        print("LANGUAGE:",p[0])
 
 #grammar for each line of code
 
@@ -196,8 +214,7 @@ def p_line(p):
          | input
          | empty
     '''
-    p[0] = p[1]
-    print("LINE:",p[0])
+    p[0] = ('LINE', p[1])
 
 #grammar for reading
 
@@ -205,8 +222,8 @@ def p_func_assign(p):
     '''
     func_assign     :   datatype NAME LPAREN parameters RPAREN START NEWLINE language return_stmt STOP
     ''' 
-    p[0] = ('FUNCTION', p[1], p[2], p[4], p[8], p[9])
-    print("FUNCTION:",p[0])
+    datatype = p[1].upper()
+    p[0] = ('FUNCTION', datatype, p[2], p[4], p[8], p[9])
 
 
 def p_return_stmt(p):
@@ -217,12 +234,13 @@ def p_return_stmt(p):
 
     '''
     if len(p) == 4:
-        p[0] = ('RETURN', p[1], p[2])
+        p[0] = ('RETURN', p[2])
+    elif len(p) == 3:
+        p[0] = ('RETURN', 'void')
     else:
-        p[0] = ('RETURN', p[1])
+        p[0] = None
     
 
-    print("RETURN STMT:", p[0])
 
 def p_parameters(p):
     '''
@@ -231,8 +249,7 @@ def p_parameters(p):
                     |   empty
     '''
 
-    p[0] = p[1]
-    print("PARAMETERS:",p[0])
+    p[0] = ('PARAMETERS', p[1])
 
 def p_first_param(p):
     '''
@@ -240,12 +257,11 @@ def p_first_param(p):
                     |   datatype NAME
 
     '''
-    
+    datatype = p[1].upper()
     if len(p) == 5:
-        p[0] = (p[1], p[2], p[4])
+        p[0] = ('FIRST_PARAM',datatype, p[2], p[4])
     else:
-        p[0] = (p[1], p[2])
-    print("FIRST PARAM:",p[0]) 
+        p[0] = ('FIRST_PARAM', datatype, p[2], None)
 
 def p_datatype(p):
     '''
@@ -256,15 +272,13 @@ def p_datatype(p):
                 |   VOID_TYPE
     '''
     p[0] = p[1]
-    print("DATATYPE:", p[0])
 
 def p_input(p):
     '''
     input : READ LPAREN NAME RPAREN
     '''
 
-    p[0] = (p[1],p[3])
-    print("INPUT:",p[0])
+    p[0] = ('READ', ('VAR',p[3]) )
 
 #grammar for printing
 
@@ -274,7 +288,6 @@ def p_output(p):
     '''
 
     p[0] = p[1]
-    print("OUTPUT:",p[0])
 
 #printing without newline
 
@@ -283,8 +296,7 @@ def p_output_print(p):
     output_print : PRINT LPAREN expression RPAREN
     '''
 
-    p[0] = (p[1], p[3])
-    print("OUTPUT PRINT:",p[0])
+    p[0] = ('PRINT', p[3])
 
 #grammar for assigning values
 
@@ -292,8 +304,7 @@ def p_expression_var_assign(p):
     '''
     expression : NAME
     '''
-    p[0] = ('var', p[1])
-    print("EXPRESSION VAR ASSIGN:", p[0])
+    p[0] = ('VAR', p[1])
 
 #grammar for equating values
 
@@ -302,157 +313,174 @@ def p_var_assign(p):
     var_assign : datatype NAME EQUALS expression
                | NAME EQUALS expression
     '''
+
     if len(p) == 5:
-        p[0] = (p[3], p[2], p[4], p[1])
+        datatype = p[1].upper()
+        p[0] = ('ASSIGN', datatype, p[2], p[4])
     else:
-        p[0] = (p[2], p[1], p[3])
+        p[0] = ('RENAME', p[1] , p[3])
 
 
-    print("VAR ASSIGN:",p[0])
 
 #grammar for deciding operators
 
-def p_expression(p):
+def p_expression_to_int(p):
     '''
-    expression : expression_operation
+    expression : math
+
     '''
-    p[0] = p[1]
-    print("EXPRESSION:", p[0])
+    p[0] = ('MATH', p[1])
 
 #grammar for infix operators
 
-def p_expression_operation(p):
+def p_expression_to_str(p):
     '''
-    expression_operation : expression MULTIPLY expression
-                         | expression DIVIDE expression
-                         | expression MODULO expression
-                         | expression PLUS expression
-                         | expression MINUS expression
-                         | expression LD expression
-                         | expression LDEQ expression
-                         | expression GD expression
-                         | expression GDEQ expression
-                         | expression EQUALEQUAL expression
-                         | expression NOTEQ expression
-                         | expression AND expression
-                         | expression OR expression
-    '''
-    p[0] = (p[2],p[1],p[3])
-    print("EXPRESSION OPERATION:", p[0])
+    expression : str
 
-def p_expression_operation_not(p):
     '''
-    expression_operation : NOT expression
-    '''
-    p[0] = (p[1], p[2])
-    print("EXPRESSION OPERATION NOT:", p[0])
-#grammar for data types
+    p[0] = ('STRING', p[1])
 
-def p_expression_data_type(p):
+def p_math(p):
     '''
-    expression : INT
-               | FLOAT
-               | STRING
-               | TRUE
-               | FALSE
+    math : math MULTIPLY math
+         | math DIVIDE math
+         | math MODULO math
+         | math PLUS math
+         | math MINUS math
+         | math LD math
+         | math LDEQ math
+         | math GD math
+         | math GDEQ math
+         | math EQUALEQUAL math
+         | math NOTEQ math
+         | math AND math
+         | math OR math
+         | NOT math
+         | MINUS math
+
     '''
-    p[0] = p[1]
-    print("EXPRESSION TO DATATYPE:", p[0])
+    if len(p) == 4:
+        p[0] = ('MATH_EXP', p[2], p[1], p[3])
+    else:
+        p[0] = ('MATH_EXP', p[1], p[2])
+
+def p_math_expression_expression_data_type(p):
+    '''
+    math    : INT
+            | FLOAT
+            | TRUE
+            | FALSE
+    '''
+    p[0] = ('MATH', p[1])
+
+
+def p_str(p):
+    '''
+    str  : str PLUS str
+         | str LD str
+         | str LDEQ str
+         | str GD str
+         | str GDEQ str
+         | str EQUALEQUAL str
+         | str NOTEQ str
+
+    '''
+    p[0] = ('STR_EXP',p[2], p[1], p[3])
+
+
+def p_str_datatype(p):
+    '''
+    str     : STRING
+    '''
+    p[0] = ('STRING', p[1])
+
+def p_math_var(p):
+    '''
+    math : NAME
+    '''
+    p[0] = ('VAR', p[1])
+
+def p_str_var(p):
+    '''
+    str : NAME
+    '''
+    p[0] = ('VAR', p[1])
+
 
 def p_expression_int_array(p):
     '''
     expression : LBRACE int_type_array RBRACE
     '''
-    p[0] = ('ARRAY', 'INT', p[2])
-    print("EXPRESSION TO ARRAY:", p[0])
+    p[0] = ('ARRAY', p[2])
 
-def p_expression_float_array(p):
-    '''
-    expression : LBRACE float_type_array RBRACE
-    '''
-    p[0] = ('ARRAY','FLOAT', p[2])
-    print("EXPRESSION TO ARRAY:", p[0])
 
 def p_expression_string_array(p):
     '''
     expression : LBRACE string_type_array RBRACE
     '''
-    p[0] = ('ARRAY','STRING', p[2])
-    print("EXPRESSION TO ARRAY:", p[0])
-
-def p_expression_bool_array(p):
-    '''
-    expression : LBRACE bool_type_array RBRACE
-    '''
-    p[0] = ('ARRAY','BOOL', p[2])
-    print("EXPRESSION TO ARRAY:", p[0])
+    p[0] = ('ARRAY', p[2])
 
 
-def p_int_type_array(p):
+def p_math_type_array(p):
     '''
-    int_type_array : empty
-                   | INT int_type_array
+    int_type_array : math
+                   | math COMMA int_type_array 
     '''
-    if len(p) == 3:
-        if p[2] == None:
-            p[0] = (p[1])
-        else:
-            p[0] = (p[1], p[2])
+    if len(p) == 4:
+        # if p[3] == None:
+        #     p[0] = (p[1])
+        # else:
+        p[0] = ("ELEMENTS", p[1], p[3])
     else:
-        p[0] = None
-    print("ARRAY IS INT-TYPED:", p[0])
+        p[0] = ("ELEMENTS", p[1], None)
     
-def p_float_type_array(p):
-    '''
-    float_type_array : empty
-                     | FLOAT float_type_array
-    '''
-    if len(p) == 3:
-        if p[2] == None:
-            p[0] = (p[1])
-        else:
-            p[0] = (p[1], p[2])
-    else:
-        p[0] = None
-    print("ARRAY IS FLOAT-TYPED:", p[0])
+
     
 def p_string_type_array(p):
     '''
-    string_type_array : empty
-                      | STRING string_type_array
+    string_type_array : str
+                      | str COMMA string_type_array
     '''
-    if len(p) == 3:
-        if p[2] == None:
-            p[0] = (p[1])
-        else:
-            p[0] = (p[1], p[2])
+    if len(p) == 4:
+        p[0] = ("ELEMENTS", p[1], p[3])
     else:
-        p[0] = None
-    print("ARRAY IS STRING-TYPED:", p[0])
+        p[0] = ("ELEMENTS", p[1], None)
 
-def p_bool_type_array(p):
-    '''
-    bool_type_array : empty
-                      | TRUE bool_type_array
-                      | FALSE bool_type_array
-    '''
-    if len(p) == 3:
-        if p[2] == None:
-            p[0] = (p[1])
-        else:
-            p[0] = (p[1], p[2])
-    else:
-        p[0] = None
-    print("ARRAY IS STRING-TYPED:", p[0])
+
+# def p_bool_type_array(p):
+#     '''
+#     bool_type_array : empty
+#                       | TRUE bool_type_array
+#                       | FALSE bool_type_array
+#     '''
+#     if len(p) == 3:
+#         if p[2] == None:
+#             p[0] = (p[1])
+#         else:
+#             p[0] = (p[1], p[2])
+#     else:
+#         p[0] = None
+#     print("ARRAY IS STRING-TYPED:", p[0])
 
 #grammar for parenthesis
 
-def p_expression_parenthesis(p):
+# def p_expression_parenthesis(p):
+#     '''
+#     expression : LPAREN expression RPAREN
+#     '''
+#     p[0] = p[2]
+
+def p_math_parenthesis(p):
     '''
-    expression : LPAREN expression RPAREN
+    math : LPAREN math RPAREN
     '''
-    p[0] = p[2]
-    print("EXPRESSION PARENTHESIS", p[0])
+    p[0] = ("PAREN", p[2])
+
+def p_str_parenthesis(p):
+    '''
+    str : LPAREN str RPAREN
+    '''
+    p[0] = ("PAREN", p[2])
 
 #grammar for if statement
 
@@ -461,23 +489,18 @@ def p_conditional(p):
     conditional : IF expression START NEWLINE language STOP else_if_blocks else_block 
     '''
     p[0] = ('IF', p[2], p[5], p[7], p[8])
-    print("CONDITIONAL", p[0])
         
 #grammar for deciding if 0 or more else if statements
 
 def p_else_if_blocks(p):
     '''
     else_if_blocks : empty
-                   | else_if_blocks else_if_block
+                   | else_if_block else_if_blocks
     '''
     if len(p) == 2:
-        p[0] = 'NO ELSE IF'
-    elif p[1] == 'NO ELSE IF':
-        p[0] = p[2]
-        print("ELSEIF:",p[0])
+        p[0] = None
     else:
-        p[0] = ('MULTIELSEIF', p[2], p[1])
-        print("MULTIELSEIF:", p[0])
+        p[0] = ('MULTIELSEIF', p[1], p[2])
 
 #grammar for else if statement
 
@@ -486,7 +509,6 @@ def p_else_if_block(p):
     else_if_block : ELSE_IF expression START NEWLINE language STOP
     '''
     p[0] = ('ELSEIF',p[2],p[5])
-    print("CONDITIONAL ELSE IF:", p[0])
 
 #grammar for else statement
 
@@ -496,11 +518,9 @@ def p_else_block(p):
                | empty
     '''
     if len(p) == 2:
-        p[0] = 'NO ELSE'
-        print("NO ELSE:", p[0])
+        p[0] = None
     else:
-        p[0] = ('ELSE',p[4])
-        print("ELSE:",p[0])
+        p[0] = ('ELSE', p[4])
 
 #grammar for while
 
@@ -509,14 +529,13 @@ def p_iterative(p):
     iterative : WHILE expression START NEWLINE language STOP
     '''
     p[0] = ('WHILE', p[2],p[5])
-    print("ITERATIVE:", p[0])
-
 
 
 
 def p_error(p):
-    print("OFFNDING LINE:",p)
-    print("Syntax Error, oh no")
+
+    print("Error - ", p)
+    print("Syntax Error ;w;")
 
 def p_empty(p):
     '''
@@ -527,194 +546,287 @@ def p_empty(p):
 
 parser = yacc.yacc()
 env = {}
+func_env = {}
+dtype = {
+    'INT':'int',
+    'FLOAT':'float',
+    'BOOL':'bool',
+    'void': 'void',
+    'STRING' : 'char *'
+}
 
 def run(p):
     global env
-    
+    global func_env
+    global functions
+
     if type(p) == tuple:
-        if p[0] == '+w+':
-            return str(run(p[1])) + " + " + str(run(p[2]))
-
-        elif p[0] == '-w-':
-            return str(run(p[1])) + " - " + str(run(p[2]))
-
-        elif p[0] == '*w*':
-            return str(run(p[1])) + " * " + str(run(p[2]))
-
-        elif p[0] == '\\w/':
-            return str(run(p[1])) + " / " + str(run(p[2]))
-
-        elif p[0] == 'ish':
-            # (ish, name, value, datatype)
-            if len(p) == 5 and p[1] not in env:
-                print("Undeclared Variable Found! - ", p[1])
-                return
-            temp = str(run(p[2]))
-            if p[1] in env:
-                stmt = p[1] + " = " + temp + ";" 
-                return stmt
-
-            if p[3] == 'void':
-                print("Cannot assign variable as void")
-                return
-            env[p[1]] = p[3] 
-            # print("test: ", p[1], env[p[1]])
-            stmt = p[3] + " " + p[1] + " = " + temp + ";"
-            return stmt
-
-        elif p[0] == 'var':
-            if p[1] not in env:
-                 print('Undeclared variable found! - ', p[1])               
-                 return
-            else:
-                 return p[1]
-
-            # return env[p[1]]
-
-        elif p[0] == '%%w%%':
-            return str(run(p[1])) + " % " + str(run(p[2]))
-
-        elif p[0] == '<w<':
-            return str(run(p[1])) + " < " + str(run(p[2]))
-
-        elif p[0] == '=w<':
-            return str(run(p[1])) + " <= " + str(run(p[2]))
-
-        elif p[0] == '>w>':
-            return str(run(p[1])) + " > " +  str(run(p[2]))
-
-        elif p[0] == '>w=':
-            return str(run(p[1])) + " >= " + str(run(p[2]))
-
-        elif p[0] == '=w=':
-            return str(run(p[1])) + " == " + str(run(p[2]))
-
-        elif p[0] == '>w<':
-            return str(run(p[1])) + " != " + str(run(p[2]))
-
-        elif p[0] == 'and':
-            return str(run(p[1])) + " and " + str(run(p[2]))
-
-        elif p[0] == 'or':
-            return str(run(p[1])) + " or " + str(run(p[2]))
-
-        elif p[0] == 'not':
-            return "!" +  str(run(p[1]))
-
-        elif p[0] == "LANGUAGE":
+        if p[0] == 'LANGUAGE':
+            if p[1] == None:
+                return ""
             return str(run(p[1]))
 
-        elif p[0] == 'MULTILINES':
-            a = str(run(p[1]))
-            b = str(run(p[2]))
+        if p[0] == 'MULTILINES':
+            if p[2] == None:
+                return str(run(p[1])) + '\n'
+            return str(run(p[1])) + "\n" + str(run(p[2]))
 
-            return a + "\n" + b
+        if p[0] == 'LINE':
+            if p[1] == None:
+                return " "
 
-        elif p[0] == 'IF':
-            if str(run(p[1])) != 0:
-                return str(run(p[2]))
+            return str(run(p[1]))
 
-        elif p[0] == 'IFELSE':
-            if str(run(p[1])) != 0:
-                return str(run(p[2]))
+        if p[0] == 'FUNCTION':
+            datatype = dtype[p[1]]
+            name = p[2]
+            func_env[name] = {}
+            parameters = run(p[3])
+
+            params = []
+            # print(parameters)
+            for haha in parameters:
+                func_env[haha[1]] = haha[0]
+                env[haha[1]] = haha[0].upper()
+                params.append(" ".join(haha))
+
+            params = ",".join(params)
+
+            body = str(run(p[4]))
+            ret = run(p[5])
+            if ret == None:
+                ret = ""
+
+            func = datatype + " " + name + "(" + params + ")" + "{\n" + body + "\n" + ret + "\n}\n"
+
+            functions.append(func)
+            return "\n"
+
+        if p[0] == 'RETURN':
+            if p[1] == 'void':
+                return 'return;\n'
+            if p[1] == None:
+                return ""
+            retval = str(run(p[1]))
+            return 'return + ' + retval + ";\n"
+
+
+        if p[0] == 'PARAMETERS':
+            params = run(p[1])
+
+            return params
+
+        if p[0] == 'FIRST_PARAM':
+            dataype = dtype[str(run(p[1]))]
+            name = str(run(p[2]))
+            others = p[3]
+
+
+            if others != None:
+                all_param = [[dataype,name]] + run(others)
             else:
-                return str(run(p[3]))
+                all_param = [[dataype,name]]
 
-        elif p[0] == 'WHILE':
-            # while str(run(p[1])) != 0:
-            #     return str(run(p[2]))
-            # (WHILE, CONDITION, BODY)
+            return all_param
 
+        if p[0] == 'PRINT':
+            
+            to_print = run(p[1])
+
+            if p[1][0] == 'VAR':
+                a = run(p[1])
+
+                if env[a] == 'INT':
+                    stmt = "printf(\"%%d\\n\", %s);" % (a)
+                elif env[a] == 'STRING':
+                    stmt = "printf(\"%%s\\n\", %s);" % (a)
+                elif env[a] == 'FLOAT':
+                    stmt = "printf(\"%%f\\n\", %s);" % (a)
+
+            if p[1][0] == 'STRING':
+
+                stmt = "printf(\"%s\\n\");" % str(run(p[1]))
+
+            if p[1][0] == 'MATH':
+                stmt = "printf(\"%%d\\n\", %s);" % str(run(p[1]))
+
+            return stmt
+
+        if p[0] == 'READ':
+            # (READ, name)
+            a = run(p[1])
+            if env[a] == 'INT':
+                stmt = "scanf(\"%%d\", &%s);" % (a)
+            elif env[a] == 'STRING:':
+                stmt = "scanf(\"%%s\", &%s);" % (a)
+            elif env[a] == 'FLOAT':
+                stmt = "scanf(\"%%f\", &%s);" % (a)
+
+            return stmt
+        if p[0] == 'ARRAY':
+            ### Deal with this in var ###
+            elements = run(p[1])
+
+            return "{" + ",".join(elements) + "}"
+
+
+        if p[0] == 'ELEMENTS':
+            head = run(p[1])
+
+            if p[2] != None:
+                tail = run(p[2])
+            else:
+                tail = []
+
+            return [head] + tail
+
+        if p[0] == 'PAREN':
+            return '(%s)' % (str(run([1])))
+
+        if p[0] == 'IF':
+            condition = str(run(p[1]))
+            body = str(run(p[2]))
+            elseif = p[3]
+            els = p[4]
+
+
+            if elseif != None:
+                elseif = str(run(p[3]))
+            else:
+                elseif = ""
+
+            if els != None:
+                els = str(run(p[4]))
+            else:
+                els = ""
+
+            stmt = ("if (%s) {\n%s\n}\n" % (condition, body))+ elseif + "\n" + els 
+            return stmt
+
+        if p[0] == 'ELSEIF':
+            condition = str(run(p[1]))
+            body = str(run(p[2]))
+
+            return "else if (%s) {\n%s\n}" % (condition, body)
+
+        if p[0] == "MULTIELSEIF":
+            head = str(run(p[1]))
+            tail = p[2]
+            if tail != None:
+                tail = run(p[2])
+            else:
+                tail = ""
+
+            return head + "\n" +  tail
+
+        if p[0] == "ELSE":
+            body = str(run(p[1]))
+            return "else {\n%s\n}\n" % (body)
+
+        if p[0] == 'WHILE':
             condition = str(run(p[1]))
             body = str(run(p[2]))
 
             stmt = "while (%s) {\n%s\n}\n" % (condition, body)
             return stmt
 
-        elif p[0] == 'pwint':
-            # (pwint, name)
+        if p[0] == 'MATH_EXP' or p[0] == 'STR_EXP':
 
-            if type(p[1]) == type:
-                a = str(run(p[1]))
+            if len(p) == 4:
+                operator = op[p[1]]
+                val1 = str(run(p[2]))
+                val2 = str(run(p[3]))
 
-                if a not in env:
-                    print("Undeclared variable found! - ", a)
-                    return
+                return val1 + " " + operator + " " + val2 
             else:
-                a = str(run(p[1]))
+                operator = op[p[1]]
+                val = str(run(p[2]))
+
+                return operator + val
+
+        if p[0] == 'ASSIGN':
+            datatype = p[1].upper()
+            name = p[2]
+            expression = p[3]
+            expression_type = p[3][0]
+
+            internaltype = ""
+            if datatype == 'INT' or datatype == 'FLOAT' or datatype == 'TRUE' or datatype == 'FALSE':
+                internaltype = 'MATH'
+            if datatype == 'STRING':
+                internaltype = 'STRING'
+
+            if expression_type == "STR_EXP":
+                expression_type = 'STRING'
+
+            if expression_type == 'MATH_EXP':
+                expression_type = 'MATH'
 
 
-            if env[a] == 'int':
-                stmt = "printf(\"%%d\\n\", %s);" % (a)
-            elif env[a] == 'str':
-                stmt = "printf(\"%%s\\n\", %s);" % (a)
-            elif env[a] == 'float':
-                stmt = "printf(\"%%f\\n\", %s);" % (a)
+            if internaltype != expression_type:
+                print("Variable type and value are not of compatible types at ASSIGN! ", internaltype, expression_type)
+                return
 
+            if name in env:
+                print("Variable has been declared before! - ", name)
+                return
+
+
+            env[name] = datatype
+            expression = str(run(expression))
+
+            stmt = datatype.lower() + " " + name + " = " +  expression + ";\n"
             return stmt
 
-        elif p[0] == 'READ':
-            # (READ, name)
-            if type(p[1]) == tuple:
-                a = str(run(p[1]))
+        if p[0] == 'RENAME':
+            name = p[1]
+            if name not in env:
+                print("Undeclared variable found! - '", p[1])
+                return
 
-                if a not in env:
-                    print("Undeclared variable found! - ", a)
-                    return
-            else:
-                a = str(run(p[1]))
+            expression = p[2] 
+            expression_type = p[2][0]
 
-            if env[a] == 'int':
-                stmt = "scanff(\"%%d\", &%s);" % (a)
-            elif env[a] == 'str':
-                stmt = "scanff(\"%%s\", &%s);" % (a)
-            elif env[a] == 'float':
-                stmt = "scanff(\"%%f\", &%s);" % (a)
+            if expression_type == "STR_EXP":
+                expression_type = 'STRING'
 
+            if expression_type == 'MATH_EXP':
+                expression_type = 'MATH'
+
+
+            datatype = env[name].upper()
+
+            internaltype = ""
+            if datatype == 'INT' or datatype == 'FLOAT' or datatype == 'TRUE' or datatype == 'FALSE':
+                internaltype = 'MATH'
+            if datatype == "STRING":
+                internaltype = 'STRING'
+
+            if internaltype != expression_type:
+                print("Variable type and value are not of compatible types at REASSIGN! ", internaltype, expression_type )
+                return
+
+            expression = str(run(expression))
+            stmt = name + " = " + expression + ";\n"
             return stmt
+
+        if p[0] == 'VAR':
+            if p[1] not in env:
+                 print('Undeclared variable found! - ', p[1])               
+                 return
+            else:
+                 return p[1]
+
+        if p[0] == 'MATH':
+            return str(run(p[1]))
+
+        if p[0] == 'STRING':
+            return str(run(p[1]))
+
+
+        
     else:
         return p
-
-    #     ### boolean?? not sure where to add yet ###
-    #     if p[0] == 'bool':
-    #         print("testing bool stuff")
-    #         return
-
-    #     ### Check if env Exists ###
-    #     if p[0] == 'var':
-    #         if p[1] not in env:
-    #             print('Undeclared variable found! - ', p[1])               
-    #             return
-    #         else:
-    #             return env[p[1]]
-
-    #     ### Assign Value to Variable ###
-    #     if p[0] == '=':
-    #         env[p[1]] = str(run(p[2]))
-    #         return
-
-
-    #     a = run(p[1])
-    #     b = run(p[2])
-
-    #     if type(a) != int or type(b) != int:
-    #         return
-
-    #     ### Evaluate Expressions ###
-    #     if p[0] == '+':
-    #         return a + b
-    #     if p[0] == '-':
-    #         return a - b
-    #     if p[0] == '*':
-    #         return a * b
-    #     if p[0] == '/':
-    #         return a / b
-    #     if p[0] == '%':
-    #         return a % b
-    # else:
-    #     return p
-
-
 
 
 def open_file(filename):

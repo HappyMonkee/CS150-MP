@@ -1,9 +1,25 @@
-int i ish 0
-wiw (i <w< 10) {.w.}/
 
-    pwint(i)
+int func(int i, int b, float c) {.w.}/
+
+    i ish 10
+    wiw i <w< 10 {.w.}/
+
     i ish i +w+ 1
+    \{.w.}
+    
+
 \{.w.}
 
 
-# lyk (i)
+
+int a ish 10
+lyk a <w< 15 {.w.}/
+    pwint("HI")
+\{.w.} ewselyk 15 <w< 20 {.w.}/
+    pwint("WHERE ARE MY GROUPMATES")   
+\{.w.} ewselyk 15 <w< 30 {.w.}/   
+    pwint("SOMEONE SAVE ME")
+\{.w.}
+
+int d ish a +w+ 10
+pwint(d)

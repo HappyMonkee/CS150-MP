@@ -41,4 +41,6 @@ printf("SOMEONE SAVE ME\n");
 
 int d = a + 10;
 
-printf("%d\n", d);}
+printf("%d\n", d);
+return 0;
+}
